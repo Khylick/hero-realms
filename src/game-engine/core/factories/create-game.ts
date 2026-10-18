@@ -66,5 +66,11 @@ export function createGame({
 
     randomState: seed >>> 0,
     nextCardInstanceId: 1,
+
+    resolution: {
+      queue: [],
+      pendingChoice: null,
+      nextChoiceId: 1,
+    },
   };
 }

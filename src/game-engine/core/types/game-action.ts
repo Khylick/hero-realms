@@ -33,4 +33,10 @@ export type GameAction =
   | {
       type: "END_TURN";
       playerId: PlayerId;
+    }
+  | {
+      type: "RESOLVE_CHOICE";
+      playerId: PlayerId;
+      choiceId: string;
+      selectedCardIds: CardId[];
     };

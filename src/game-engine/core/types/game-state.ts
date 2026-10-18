@@ -21,6 +21,10 @@ import type {
 
 import type { CampaignProgress } from "./campaign";
 
+import type {
+  EffectResolutionState,
+} from "./resolution";
+
 export interface MarketState {
     deck: CardId[];
     row: CardId[];
@@ -55,4 +59,6 @@ export interface GameState {
 
     randomState: number;
     nextCardInstanceId: number;
+
+    resolution: EffectResolutionState;
 }

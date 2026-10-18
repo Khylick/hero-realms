@@ -92,4 +92,38 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
+
+  tacticalScroll: {
+    id: "tacticalScroll",
+    name: "Parchemin tactique",
+    type: "action",
+    faction: "guild",
+    cost: 2,
+    abilities: [
+      {
+        id: "tactical-scroll-primary",
+        trigger: "onPlay",
+        effects: [
+          {
+            type: "gainCombat",
+            amount: 2,
+          },
+          {
+            type: "drawCards",
+            amount: 1,
+          },
+          {
+            type: "chooseCard",
+            from: "hand",
+            action: "discard",
+            amount: 1,
+          },
+          {
+            type: "gainGold",
+            amount: 1,
+          },
+        ],
+      },
+    ],
+  },
 };

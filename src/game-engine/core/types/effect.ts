@@ -35,6 +35,12 @@ export type CardEffect =
     | {
         type: "sacrificeCard";
         target: EffectTarget;
+    }
+    | {
+        type: "chooseCard";
+        from: "hand" | "discard";
+        action: "discard" | "sacrifice";
+        amount: number;
     };
 
 export interface EffectGroup {

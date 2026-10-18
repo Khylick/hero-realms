@@ -1,6 +1,7 @@
 import type { GameState } from "../types/game-state";
+import type { CardEffect } from "../types/effect";
 
-import { resolveSimpleEffect } from "../effects/resolve-effects";
+import { enqueueEffects } from "../effects/effect-queue";
 import { moveCard } from "./card-zones";
 
 export function playCard(
@@ -15,6 +16,18 @@ export function playCard(
   ) {
     throw new Error(
       "Impossible de jouer une carte maintenant.",
+    );
+  }
+
+  if (game.resolution.pendingChoice) {
+    throw new Error(
+      "Un choix doit être résolu avant de jouer.",
+    );
+  }
+
+  if (game.resolution.queue.length > 0) {
+    throw new Error(
+      "Une résolution d'effets est déjà en cours.",
     );
   }
 
@@ -46,42 +59,43 @@ export function playCard(
 
   if (definition.type === "champion") {
     throw new Error(
-      "Les champions ne sont pas encore pris en charge.",
+      "Les champions seront traités à l'étape 6.4.",
     );
   }
 
-  const onPlayAbilities = definition.abilities.filter(
+  const abilities = definition.abilities.filter(
     (ability) => ability.trigger === "onPlay",
   );
 
-  for (const ability of onPlayAbilities) {
+  for (const ability of abilities) {
     if (
       ability.optional ||
       ability.conditions?.length
     ) {
       throw new Error(
-        "Cette capacité nécessite le moteur avancé.",
+        "Cette capacité nécessite une résolution avancée.",
       );
     }
   }
 
-  let updatedPlayer = player;
-
-  for (const ability of onPlayAbilities) {
-    for (const effect of ability.effects) {
-      updatedPlayer = resolveSimpleEffect(
-        updatedPlayer,
-        effect,
-      );
-    }
-  }
+  const effects: CardEffect[] = abilities.flatMap(
+    (ability) => ability.effects,
+  );
 
   next.players[playerId] = moveCard(
-    updatedPlayer,
+    player,
     cardId,
     "hand",
     "inPlay",
   );
 
-  return next;
+  return enqueueEffects(
+    next,
+    {
+      playerId,
+      sourceCardId: cardId,
+      abilityId: abilities[0]?.id ?? "none",
+    },
+    effects,
+  );
 }
