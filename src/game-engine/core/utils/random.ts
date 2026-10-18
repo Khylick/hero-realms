@@ -1,5 +1,6 @@
 export interface RandomGenerator {
     next(): number;
+    getState(): number;
 }
 
 export function createSeededRandom(
@@ -27,6 +28,9 @@ export function createSeededRandom(
             return (
                 (value ^ (value >>> 14)) >>> 0
             ) / 4294967296;
+        },
+        getState(): number {
+            return state;
         },
     };
 }

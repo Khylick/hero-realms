@@ -9,6 +9,7 @@ interface CreateGameOptions {
   mode: GameMode;
   players: PlayerState[];
   cardDefinitions: Record<string, CardDefinition>;
+  seed?: number;
 }
 
 export function createGame({
@@ -16,6 +17,7 @@ export function createGame({
   mode,
   players,
   cardDefinitions,
+  seed = 42,
 }: CreateGameOptions): GameState {
   if (players.length === 0) {
     throw new Error(
@@ -61,5 +63,8 @@ export function createGame({
     hazards: {},
 
     campaign: null,
+
+    randomState: seed >>> 0,
+    nextCardInstanceId: 1,
   };
 }

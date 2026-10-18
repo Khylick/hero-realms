@@ -52,4 +52,7 @@ export interface GameState {
     hazards: Record<string, HazardState>;
 
     campaign: CampaignProgress | null;
+
+    randomState: number;
+    nextCardInstanceId: number;
 }
