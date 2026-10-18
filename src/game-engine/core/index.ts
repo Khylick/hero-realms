@@ -34,3 +34,5 @@ export * from "./types/ability";
 
 export * from "./types/resolution";
 export * from "./effects/effect-queue";
+
+export * from "./rules/alliances";

@@ -7,6 +7,8 @@ import { buyCard } from "../rules/market";
 import { resolveChoice } from "../effects/effect-queue";
 import { validateGameState } from "../rules/invariants";
 
+import { activateAlly } from "../rules/alliances";
+
 export function applyAction(
   game: GameState,
   action: GameAction,
@@ -49,6 +51,15 @@ export function applyAction(
         game,
         action.playerId,
         action.cardId,
+      );
+      break;
+
+    case "ACTIVATE_ALLY":
+      next = activateAlly(
+        game,
+        action.playerId,
+        action.cardId,
+        action.abilityId,
       );
       break;
 

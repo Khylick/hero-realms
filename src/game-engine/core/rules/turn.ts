@@ -95,6 +95,14 @@ export function endTurn(
   const next = structuredClone(game);
   const random = createSeededRandom(next.randomState);
 
+  const cardsLeavingPlay = [
+    ...next.players[playerId].zones.inPlay,
+  ];
+
+  for (const cardId of cardsLeavingPlay) {
+    next.cards[cardId].usedAbilities = [];
+  }
+
   const player = cleanupPlayer(next.players[playerId]);
 
   next.players[playerId] = drawCards(

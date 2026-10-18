@@ -39,4 +39,10 @@ export type GameAction =
       playerId: PlayerId;
       choiceId: string;
       selectedCardIds: CardId[];
+    }
+  | {
+      type: "ACTIVATE_ALLY";
+      playerId: PlayerId;
+      cardId: CardId;
+      abilityId: string;
     };

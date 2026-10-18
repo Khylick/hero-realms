@@ -1,4 +1,5 @@
 import type { CardEffect } from "./effect";
+import type { Faction } from "./common";
 
 export type AbilityTrigger = 
   | "onPlay"
@@ -9,7 +10,7 @@ export type AbilityTrigger =
 export type AbilityCondition =
   | {
     type: "hasFactionInPlay";
-    faction: string;
+    faction: Faction;
     minimum: number;
   }
   | {

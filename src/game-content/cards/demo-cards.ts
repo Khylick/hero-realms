@@ -126,4 +126,71 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
+  
+  imperialScout: {
+    id: "imperialScout",
+    name: "Éclaireur impérial",
+    type: "action",
+    faction: "imperial",
+    cost: 2,
+    abilities: [
+      {
+        id: "imperial-scout-primary",
+        trigger: "onPlay",
+        effects: [
+          {
+            type: "gainGold",
+            amount: 1,
+          },
+        ],
+      },
+      {
+        id: "imperial-scout-ally",
+        trigger: "ally",
+        effects: [
+          {
+            type: "gainCombat",
+            amount: 2,
+          },
+        ],
+      },
+    ],
+  },
+  
+  imperialStrategist: {
+    id: "imperialStrategist",
+    name: "Stratège impérial",
+    type: "action",
+    faction: "imperial",
+    cost: 3,
+    abilities: [
+      {
+        id: "imperial-strategist-primary",
+        trigger: "onPlay",
+        effects: [
+          {
+            type: "gainGold",
+            amount: 1,
+          },
+        ],
+      },
+      {
+        id: "imperial-strategist-ally",
+        trigger: "ally",
+        effects: [
+          {
+            type: "chooseCard",
+            from: "hand",
+            action: "discard",
+            amount: 1,
+          },
+          {
+            type: "gainCombat",
+            amount: 3,
+          },
+        ],
+      },
+    ],
+  },
+
 };
