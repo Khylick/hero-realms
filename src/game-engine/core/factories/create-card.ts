@@ -22,5 +22,6 @@ export function createCard({
     definitionId,
     ownerId,
     exhausted: false,
+    usedAbilities: [],
   };
 }

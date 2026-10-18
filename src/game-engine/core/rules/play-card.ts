@@ -46,29 +46,29 @@ export function playCard(
 
   if (definition.type === "champion") {
     throw new Error(
-      "Les champions seront implémentés à l'étape 6.",
+      "Les champions ne sont pas encore pris en charge.",
     );
   }
 
-  if (
-    definition.allyEffects?.length ||
-    definition.sacrificeEffects?.length
-  ) {
-    throw new Error(
-      "Cette carte nécessite le moteur d'effets avancé.",
-    );
+  const onPlayAbilities = definition.abilities.filter(
+    (ability) => ability.trigger === "onPlay",
+  );
+
+  for (const ability of onPlayAbilities) {
+    if (
+      ability.optional ||
+      ability.conditions?.length
+    ) {
+      throw new Error(
+        "Cette capacité nécessite le moteur avancé.",
+      );
+    }
   }
 
   let updatedPlayer = player;
 
-  for (const group of definition.primaryEffects) {
-    if (group.optional) {
-      throw new Error(
-        "Les effets optionnels ne sont pas encore gérés.",
-      );
-    }
-
-    for (const effect of group.effects) {
+  for (const ability of onPlayAbilities) {
+    for (const effect of ability.effects) {
       updatedPlayer = resolveSimpleEffect(
         updatedPlayer,
         effect,

@@ -1,43 +1,41 @@
 import type {
-    CardDefinitionId,
-    CardId,
-    Faction,
-    PlayerId,
+  CardDefinitionId,
+  CardId,
+  Faction,
+  PlayerId,
 } from "./common";
 
-import type { EffectGroup } from "./effect";
+import type { CardAbility } from "./ability";
 
-export type CardType = 
-    | "action"
-    | "item"
-    | "champion";
+export type CardType =
+  | "action"
+  | "item"
+  | "champion";
 
 export interface CardDefinition {
-    id: CardDefinitionId;
-    name: string;
-    type: CardType;
+  id: CardDefinitionId;
+  name: string;
 
-    faction?: Faction;
+  type: CardType;
+  faction?: Faction;
 
-    cost: number;
+  cost: number;
 
-    defense?: number;
-    isGuard?: boolean;
+  defense?: number;
+  isGuard?: boolean;
 
-    primaryEffects: EffectGroup[];
+  abilities: CardAbility[];
 
-    allyEffects?: EffectGroup[];
-
-    sacrificeEffects?: EffectGroup[];
-
-    image?: string;
+  image?: string;
 }
 
 export interface CardInstance {
-    id: CardId;
-    definitionId: CardDefinitionId;
+  id: CardId;
+  definitionId: CardDefinitionId;
 
-    ownerId: PlayerId | null;
+  ownerId: PlayerId | null;
 
-    exhausted: boolean;
+  exhausted: boolean;
+
+  usedAbilities: string[];
 }

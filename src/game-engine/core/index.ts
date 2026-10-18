@@ -28,3 +28,5 @@ export * from "./rules/play-card";
 export * from "./effects/resolve-effects";
 
 export * from "./actions/apply-action";
+
+export * from "./types/ability";
