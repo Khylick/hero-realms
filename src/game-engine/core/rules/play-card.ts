@@ -57,12 +57,6 @@ export function playCard(
     throw new Error("Définition de carte inconnue.");
   }
 
-  if (definition.type === "champion") {
-    throw new Error(
-      "Les champions seront traités à l'étape 6.4.",
-    );
-  }
-
   const abilities = definition.abilities.filter(
     (ability) => ability.trigger === "onPlay",
   );
@@ -82,12 +76,23 @@ export function playCard(
     (ability) => ability.effects,
   );
 
+  
+  const destination =
+    definition.type === "champion"
+      ? "champions"
+      : "inPlay";
+
   next.players[playerId] = moveCard(
     player,
     cardId,
     "hand",
-    "inPlay",
+    destination,
   );
+
+  if (definition.type === "champion") {
+    next.cards[cardId].exhausted = false;
+    next.cards[cardId].usedAbilities = [];
+  }
 
   return enqueueEffects(
     next,

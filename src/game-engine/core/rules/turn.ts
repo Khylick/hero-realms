@@ -6,6 +6,8 @@ import { drawCards } from "./deck";
 import { resetResources } from "./resources";
 import { createSeededRandom } from "../utils/random";
 
+import { readyChampions } from "./champions";
+
 const HAND_SIZE = 5;
 
 export function startGame(
@@ -48,7 +50,10 @@ export function startGame(
   next.turnNumber = 1;
   next.activePlayerId = next.playerOrder[0];
 
-  return next;
+  return readyChampions(
+    next,
+    next.activePlayerId,
+  );
 }
 
 function cleanupPlayer(
@@ -122,5 +127,8 @@ export function endTurn(
   next.activePlayerId = next.playerOrder[nextIndex];
   next.turnNumber += 1;
 
-  return next;
+  return readyChampions(
+    next, 
+    next.activePlayerId
+  );
 }

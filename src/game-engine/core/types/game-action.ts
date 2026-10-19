@@ -29,6 +29,7 @@ export type GameAction =
       type: "USE_CHAMPION";
       playerId: PlayerId;
       cardId: CardId;
+      abilityId: string;
     }
   | {
       type: "END_TURN";

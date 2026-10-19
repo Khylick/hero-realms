@@ -193,4 +193,33 @@ export const demoCards: Record<string, CardDefinition> = {
     ],
   },
 
+  arcaneGuardian: {
+    id: "arcaneGuardian",
+    name: "Gardien arcanique",
+    type: "champion",
+    faction: "guild",
+    cost: 5,
+    defense: 5,
+    isGuard: false,
+    abilities: [
+      {
+        id: "arcane-guardian-ability",
+        trigger: "activated",
+        oncePerTurn: true,
+        effects: [
+          {
+            type: "chooseCard",
+            from: "hand",
+            action: "discard",
+            amount: 1,
+          },
+          {
+            type: "gainCombat",
+            amount: 4,
+          },
+        ],
+      },
+    ],
+  },
+
 };

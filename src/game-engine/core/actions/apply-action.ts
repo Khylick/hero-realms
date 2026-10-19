@@ -8,6 +8,7 @@ import { resolveChoice } from "../effects/effect-queue";
 import { validateGameState } from "../rules/invariants";
 
 import { activateAlly } from "../rules/alliances";
+import { activateChampion } from "../rules/champions";
 
 export function applyAction(
   game: GameState,
@@ -76,8 +77,17 @@ export function applyAction(
       );
       break;
 
-    case "ATTACK_ENEMY":
+    
     case "USE_CHAMPION":
+      next = activateChampion(
+        game,
+        action.playerId,
+        action.cardId,
+        action.abilityId,
+      );
+      break;
+
+    case "ATTACK_ENEMY":
       throw new Error(
         `Action non implémentée : ${action.type}`,
       );
