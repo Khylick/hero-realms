@@ -41,3 +41,7 @@ export * from "./rules/champions";
 
 export * from "./rules/targeting";
 export * from "./rules/combat";
+
+export * from "./types/character-class";
+export * from "./rules/character-classes";
+export * from "./factories/create-class-player";
