@@ -1,4 +1,3 @@
-
 import type { GameState } from "../types/game-state";
 import type { CardId } from "../types/common";
 
@@ -95,6 +94,78 @@ export function validateGameState(
       );
     }
   }
+
+  // Vérifier les ressources et les points de vie
+  for (const player of Object.values(game.players)) {
+    for (const resource of ["gold", "combat"] as const) {
+      const value = player.resources[resource];
+
+      if (!Number.isSafeInteger(value) || value < 0) {
+        errors.push(
+          `Ressource invalide : ${player.id}.${resource}`,
+        );
+      }
+    }
+
+    if (
+      !Number.isSafeInteger(player.health) ||
+      player.health < 0 ||
+      player.health > player.maxHealth
+    ) {
+      errors.push(
+        `Points de vie invalides : ${player.id}`,
+      );
+    }
+
+    if (player.defeated !== (player.health === 0)) {
+      errors.push(
+        `État de défaite incohérent : ${player.id}`,
+      );
+    }
+  }
+  
+  // Vérifier la résolution en attente.
+  const choice = game.resolution.pendingChoice;
+
+  if (choice) {
+    const player = game.players[choice.playerId];
+
+    if (!player) {
+      errors.push(
+        "Le choix appartient à un joueur inconnu.",
+      );
+    } else {
+      if (
+        !Number.isSafeInteger(choice.amount) ||
+        choice.amount < 1
+      ) {
+        errors.push(
+          "Nombre de cartes du choix invalide."
+        );
+      }
+
+      if (
+        new Set(choice.availableCardIds).size !==
+        choice.availableCardIds.length
+      ) {
+        errors.push(
+          "Le choix contient des cartes dupliquées.",
+        );
+      }
+
+      for (const cardId of choice.availableCardIds) {
+        if (!player.zones[choice.from].includes(cardId)) {
+          errors.push(
+            `Carte indisponible dans le choix : ${cardId}`,
+          );
+        }
+      }
+      
+    }
+  }
+  
+
+
 
   return errors;
 }
