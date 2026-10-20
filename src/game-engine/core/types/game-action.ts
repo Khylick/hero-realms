@@ -46,4 +46,16 @@ export type GameAction =
       playerId: PlayerId;
       cardId: CardId;
       abilityId: string;
+    }
+  | {
+      type: "ATTACK_CHAMPION";
+      playerId: PlayerId;
+      targetPlayerId: PlayerId;
+      cardId: CardId;
+    }
+  | {
+      type: "ATTACK_PLAYER";
+      playerId: PlayerId;
+      targetPlayerId: PlayerId;
+      amount: number;
     };

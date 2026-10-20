@@ -221,5 +221,28 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
+  
+  battleMage: {
+    id: "battleMage",
+    name: "Mage de bataille",
+    type: "champion",
+    faction: "guild",
+    cost: 4,
+    defense: 3,
+    isGuard: false,
+    abilities: [
+      {
+        id: "battle-mage-ability",
+        trigger: "activated",
+        oncePerTurn: true,
+        effects: [
+          {
+            type: "gainCombat",
+            amount: 2,
+          },
+        ],
+      },
+    ],
+  },
 
 };

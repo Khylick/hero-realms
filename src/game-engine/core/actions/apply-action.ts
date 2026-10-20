@@ -9,6 +9,10 @@ import { validateGameState } from "../rules/invariants";
 
 import { activateAlly } from "../rules/alliances";
 import { activateChampion } from "../rules/champions";
+import {
+  attackChampion,
+  attackPlayer,
+} from "../rules/combat";
 
 export function applyAction(
   game: GameState,
@@ -87,10 +91,28 @@ export function applyAction(
       );
       break;
 
+    case "ATTACK_CHAMPION":
+      next = attackChampion(
+        game,
+        action.playerId,
+        action.targetPlayerId,
+        action.cardId,
+      );
+      break;
+
+    case "ATTACK_PLAYER":
+      next = attackPlayer(
+        game,
+        action.playerId,
+        action.targetPlayerId,
+        action.amount,
+      );
+      break;
+
     case "ATTACK_ENEMY":
       throw new Error(
         `Action non implémentée : ${action.type}`,
-      );
+      );    
 
     default: {
       const exhaustive: never = action;

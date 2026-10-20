@@ -38,3 +38,6 @@ export * from "./effects/effect-queue";
 export * from "./rules/alliances";
 
 export * from "./rules/champions";
+
+export * from "./rules/targeting";
+export * from "./rules/combat";

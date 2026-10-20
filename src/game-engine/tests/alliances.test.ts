@@ -382,4 +382,83 @@ describe("Ally abilities", () => {
     expect(validateGameState(played)).toEqual([]);
   });
 
+  it("suspend puis reprend une capacité d'alliance", () => {
+    const { game, bladeId, scoutId } = prepareGame();
+
+    const current = structuredClone(game);
+    const player = current.players["player-1"];
+
+    // Transformer une carte d'or de la main
+    // en Stratège impérial pour le scénario.
+    const strategistId = player.zones.hand.find(
+      (id) =>
+        current.cards[id].definitionId === "gold",
+    );
+
+    if (!strategistId) {
+      throw new Error("Carte de test introuvable.");
+    }
+
+    current.cards[strategistId].definitionId =
+      "imperialStrategist";
+
+    let state = applyAction(current, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: bladeId,
+    });
+
+    state = applyAction(state, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: scoutId,
+    });
+
+    state = applyAction(state, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: strategistId,
+    });
+
+    state = applyAction(state, {
+      type: "ACTIVATE_ALLY",
+      playerId: "player-1",
+      cardId: strategistId,
+      abilityId: "imperial-strategist-ally",
+    });
+
+    const choice = state.resolution.pendingChoice;
+
+    expect(choice).not.toBeNull();
+
+    if (!choice) {
+      throw new Error("Choix attendu.");
+    }
+
+    expect(
+      state.players["player-1"].resources.combat,
+    ).toBe(3);
+
+    const selectedCardId = choice.availableCardIds[0];
+
+    state = applyAction(state, {
+      type: "RESOLVE_CHOICE",
+      playerId: "player-1",
+      choiceId: choice.id,
+      selectedCardIds: [selectedCardId],
+    });
+
+    expect(state.resolution.pendingChoice).toBeNull();
+
+    expect(
+      state.players["player-1"].resources.combat,
+    ).toBe(6);
+
+    expect(
+      state.players["player-1"].zones.discard,
+    ).toContain(selectedCardId);
+
+    expect(validateGameState(state)).toEqual([]);
+  });
+
 });
