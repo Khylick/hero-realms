@@ -49,5 +49,14 @@ export function createClassPlayer({
     ...player,
     level: stats.startingLevel,
     experience: stats.startingExperience,
+
+    powers: {
+      availablePowerIds: [
+        ...classDefinition.startingSkillIds,
+        ...classDefinition.startingAbilityIds,
+      ],
+      usedThisTurn: [],
+      usedThisEncounter: [],
+    },
   };
 }

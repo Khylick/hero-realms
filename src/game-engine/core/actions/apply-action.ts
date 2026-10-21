@@ -14,6 +14,10 @@ import {
   attackPlayer,
 } from "../rules/combat";
 
+import {
+  useCharacterPower,
+} from "../rules/character-powers";
+
 export function applyAction(
   game: GameState,
   action: GameAction,
@@ -113,6 +117,14 @@ export function applyAction(
       throw new Error(
         `Action non implémentée : ${action.type}`,
       );    
+
+    case "USE_CHARACTER_POWER":
+      next = useCharacterPower(
+        game,
+        action.playerId,
+        action.powerId,
+      );
+      break;
 
     default: {
       const exhaustive: never = action;

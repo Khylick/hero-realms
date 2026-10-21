@@ -8,6 +8,10 @@ import { createSeededRandom } from "../utils/random";
 
 import { readyChampions } from "./champions";
 
+import {
+  readyCharacterPowers,
+} from "./ready-character-powers";
+
 const HAND_SIZE = 5;
 
 export function startGame(
@@ -50,9 +54,14 @@ export function startGame(
   next.turnNumber = 1;
   next.activePlayerId = next.playerOrder[0];
 
-  return readyChampions(
+  const withReadyChampions = readyChampions(
     next,
     next.activePlayerId,
+  );
+
+  return readyCharacterPowers(
+    withReadyChampions,
+    withReadyChampions.activePlayerId,
   );
 }
 
@@ -127,8 +136,13 @@ export function endTurn(
   next.activePlayerId = next.playerOrder[nextIndex];
   next.turnNumber += 1;
 
-  return readyChampions(
-    next, 
-    next.activePlayerId
+  const withReadyChampions = readyChampions(
+    next,
+    next.activePlayerId,
+  );
+
+  return readyCharacterPowers(
+    withReadyChampions,
+    withReadyChampions.activePlayerId,
   );
 }

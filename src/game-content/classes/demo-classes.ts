@@ -80,8 +80,8 @@ export const demoClasses: ClassRegistry = {
       startingExperience: 0,
     },
     startingDeck: clericDeck,
-    startingSkillIds: [],
-    startingAbilityIds: [],
+    startingSkillIds: ["cleric-healing-prayer"],
+    startingAbilityIds: ["cleric-divine-light"],
   },
 
   fighter: {
@@ -95,8 +95,8 @@ export const demoClasses: ClassRegistry = {
       startingExperience: 0,
     },
     startingDeck: fighterDeck,
-    startingSkillIds: [],
-    startingAbilityIds: [],
+    startingSkillIds: ["fighter-battle-stance"],
+    startingAbilityIds: ["fighter-heroic-strike"],
   },
 
   ranger: {
@@ -110,8 +110,8 @@ export const demoClasses: ClassRegistry = {
       startingExperience: 0,
     },
     startingDeck: rangerDeck,
-    startingSkillIds: [],
-    startingAbilityIds: [],
+    startingSkillIds: ["ranger-precise-shot"],
+    startingAbilityIds: ["ranger-tracking"],
   },
 
   thief: {
@@ -125,8 +125,8 @@ export const demoClasses: ClassRegistry = {
       startingExperience: 0,
     },
     startingDeck: thiefDeck,
-    startingSkillIds: [],
-    startingAbilityIds: [],
+    startingSkillIds: ["thief-quick-hands"],
+    startingAbilityIds: ["thief-shadow-strike"],
   },
 
   wizard: {
@@ -140,7 +140,7 @@ export const demoClasses: ClassRegistry = {
       startingExperience: 0,
     },
     startingDeck: wizardDeck,
-    startingSkillIds: [],
-    startingAbilityIds: [],
+    startingSkillIds: ["wizard-arcane-focus"],
+    startingAbilityIds: ["wizard-arcane-surge"],
   },
 };

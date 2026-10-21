@@ -58,4 +58,9 @@ export type GameAction =
       playerId: PlayerId;
       targetPlayerId: PlayerId;
       amount: number;
+    }
+  | {
+      type: "USE_CHARACTER_POWER";
+      playerId: PlayerId;
+      powerId: string;
     };

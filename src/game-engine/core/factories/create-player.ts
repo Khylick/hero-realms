@@ -44,5 +44,11 @@ export function createPlayer({
         level: 1,
 
         defeated: false,
+
+        powers: {
+          availablePowerIds: [],
+          usedThisTurn: [],
+          usedThisEncounter: [],
+        },
     };
 }

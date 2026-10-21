@@ -4,12 +4,17 @@ import type { PlayerState } from "../types/player";
 import type { CardDefinition } from "../types/card";
 import type { GameMode } from "../types/common";
 
+import type {
+  CharacterPowerRegistry,
+} from "../types/character-power";
+
 interface CreateGameOptions {
   id: string;
   mode: GameMode;
   players: PlayerState[];
   cardDefinitions: Record<string, CardDefinition>;
   seed?: number;
+  powerDefinitions?: CharacterPowerRegistry;
 }
 
 export function createGame({
@@ -18,6 +23,7 @@ export function createGame({
   players,
   cardDefinitions,
   seed = 42,
+  powerDefinitions = {},
 }: CreateGameOptions): GameState {
   if (players.length === 0) {
     throw new Error(
@@ -72,5 +78,6 @@ export function createGame({
       pendingChoice: null,
       nextChoiceId: 1,
     },
+    powerDefinitions: structuredClone(powerDefinitions),
   };
 }

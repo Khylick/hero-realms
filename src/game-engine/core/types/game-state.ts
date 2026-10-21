@@ -25,6 +25,10 @@ import type {
   EffectResolutionState,
 } from "./resolution";
 
+import type {
+  CharacterPowerRegistry,
+} from "./character-power";
+
 export interface MarketState {
     deck: CardId[];
     row: CardId[];
@@ -61,4 +65,6 @@ export interface GameState {
     nextCardInstanceId: number;
 
     resolution: EffectResolutionState;
+
+    powerDefinitions: CharacterPowerRegistry;
 }

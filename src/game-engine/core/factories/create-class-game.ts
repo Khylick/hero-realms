@@ -24,6 +24,10 @@ import {
   validateGameState,
 } from "../rules/invariants";
 
+import type {
+  CharacterPowerRegistry,
+} from "../types/character-power";
+
 export interface CreateClassGameOptions {
   id: string;
   mode: GameMode;
@@ -35,6 +39,7 @@ export interface CreateClassGameOptions {
   >;
 
   seed?: number;
+  powerDefinitions?: CharacterPowerRegistry;
 }
 
 export function createClassGame({
@@ -43,6 +48,7 @@ export function createClassGame({
   heroes,
   cardDefinitions,
   seed = 42,
+  powerDefinitions = {},
 }: CreateClassGameOptions): GameState {
   if (heroes.length === 0) {
     throw new Error(
@@ -60,6 +66,7 @@ export function createClassGame({
     players,
     cardDefinitions,
     seed,
+    powerDefinitions,
   });
 
   const cards: Record<CardId, CardInstance> = {};

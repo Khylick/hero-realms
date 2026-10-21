@@ -34,4 +34,15 @@ export interface PlayerState {
     level: number;
 
     defeated: boolean;
+
+    powers: PlayerPowersState;
+}
+
+
+export interface PlayerPowersState {
+  availablePowerIds: string[];
+
+  usedThisTurn: string[];
+
+  usedThisEncounter: string[];
 }
