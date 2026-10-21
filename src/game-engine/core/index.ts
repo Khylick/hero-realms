@@ -45,3 +45,6 @@ export * from "./rules/combat";
 export * from "./types/character-class";
 export * from "./rules/character-classes";
 export * from "./factories/create-class-player";
+
+export * from "./factories/create-class-hero";
+export * from "./factories/create-class-game";

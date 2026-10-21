@@ -2,6 +2,72 @@ import type {
   ClassRegistry,
 } from "../../game-engine/core/types/character-class";
 
+const clericDeck = [
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "dagger",
+  "dagger",
+  "imperialScout",
+  "royalGuard",
+];
+
+const fighterDeck = [
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "dagger",
+  "dagger",
+  "dagger",
+  "runicBlade",
+  "royalGuard",
+];
+
+const rangerDeck = [
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "dagger",
+  "dagger",
+  "imperialScout",
+  "battleMage",
+];
+
+const thiefDeck = [
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "dagger",
+  "dagger",
+  "tacticalScroll",
+  "imperialScout",
+];
+
+const wizardDeck = [
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "gold",
+  "dagger",
+  "dagger",
+  "tacticalScroll",
+  "battleMage",
+  "arcaneGuardian",
+];
+
+
 export const demoClasses: ClassRegistry = {
   cleric: {
     id: "cleric",
@@ -13,7 +79,7 @@ export const demoClasses: ClassRegistry = {
       startingLevel: 1,
       startingExperience: 0,
     },
-    startingDeck: [],
+    startingDeck: clericDeck,
     startingSkillIds: [],
     startingAbilityIds: [],
   },
@@ -28,7 +94,7 @@ export const demoClasses: ClassRegistry = {
       startingLevel: 1,
       startingExperience: 0,
     },
-    startingDeck: [],
+    startingDeck: fighterDeck,
     startingSkillIds: [],
     startingAbilityIds: [],
   },
@@ -43,7 +109,7 @@ export const demoClasses: ClassRegistry = {
       startingLevel: 1,
       startingExperience: 0,
     },
-    startingDeck: [],
+    startingDeck: rangerDeck,
     startingSkillIds: [],
     startingAbilityIds: [],
   },
@@ -58,7 +124,7 @@ export const demoClasses: ClassRegistry = {
       startingLevel: 1,
       startingExperience: 0,
     },
-    startingDeck: [],
+    startingDeck: thiefDeck,
     startingSkillIds: [],
     startingAbilityIds: [],
   },
@@ -73,7 +139,7 @@ export const demoClasses: ClassRegistry = {
       startingLevel: 1,
       startingExperience: 0,
     },
-    startingDeck: [],
+    startingDeck: wizardDeck,
     startingSkillIds: [],
     startingAbilityIds: [],
   },
