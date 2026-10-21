@@ -55,3 +55,9 @@ export * from "./rules/character-powers";
 export * from "./rules/ready-character-powers";
 
 export * from "./rules/validate-character-powers";
+
+export * from "./types/character-progression";
+
+export * from "./rules/character-progression";
+
+export * from "./rules/validate-character-progression";

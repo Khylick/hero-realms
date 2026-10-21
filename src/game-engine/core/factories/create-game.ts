@@ -8,6 +8,10 @@ import type {
   CharacterPowerRegistry,
 } from "../types/character-power";
 
+import type {
+  ClassProgressionRegistry,
+} from "../types/character-progression";
+
 interface CreateGameOptions {
   id: string;
   mode: GameMode;
@@ -15,6 +19,7 @@ interface CreateGameOptions {
   cardDefinitions: Record<string, CardDefinition>;
   seed?: number;
   powerDefinitions?: CharacterPowerRegistry;
+  classProgressions?: ClassProgressionRegistry;
 }
 
 export function createGame({
@@ -24,6 +29,7 @@ export function createGame({
   cardDefinitions,
   seed = 42,
   powerDefinitions = {},
+  classProgressions = {},
 }: CreateGameOptions): GameState {
   if (players.length === 0) {
     throw new Error(
@@ -79,5 +85,6 @@ export function createGame({
       nextChoiceId: 1,
     },
     powerDefinitions: structuredClone(powerDefinitions),
+    classProgressions: structuredClone(classProgressions),
   };
 }

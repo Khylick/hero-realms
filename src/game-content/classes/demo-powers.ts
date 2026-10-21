@@ -155,4 +155,66 @@ export const demoPowers: CharacterPowerRegistry = {
       },
     ],
   },
+
+
+  "cleric-greater-healing": {
+    id: "cleric-greater-healing",
+    name: "Soin supérieur",
+    description: "Rend 5 points de vie.",
+    kind: "skill",
+    usage: "oncePerTurn",
+    cost: { type: "none" },
+    effects: [
+      { type: "heal", amount: 5, target: "self" },
+    ],
+  },
+
+  "fighter-battle-cry": {
+    id: "fighter-battle-cry",
+    name: "Cri de guerre",
+    description: "Gagne 3 points de combat.",
+    kind: "skill",
+    usage: "oncePerTurn",
+    cost: { type: "none" },
+    effects: [
+      { type: "gainCombat", amount: 3 },
+    ],
+  },
+
+  "ranger-eagle-eye": {
+    id: "ranger-eagle-eye",
+    name: "Œil d'aigle",
+    description: "Pioche une carte.",
+    kind: "skill",
+    usage: "oncePerTurn",
+    cost: { type: "none" },
+    effects: [
+      { type: "drawCards", amount: 1 },
+    ],
+  },
+
+  "thief-hidden-blade": {
+    id: "thief-hidden-blade",
+    name: "Lame dissimulée",
+    description: "Gagne 3 points de combat.",
+    kind: "skill",
+    usage: "oncePerTurn",
+    cost: { type: "none" },
+    effects: [
+      { type: "gainCombat", amount: 3 },
+    ],
+  },
+
+  "wizard-mana-flow": {
+    id: "wizard-mana-flow",
+    name: "Flux arcanique",
+    description: "Gagne 2 pièces d'or.",
+    kind: "skill",
+    usage: "oncePerTurn",
+    cost: { type: "none" },
+    effects: [
+      { type: "gainGold", amount: 2 },
+    ],
+  },
+
 };

@@ -1,3 +1,4 @@
+
 import type {
   CardDefinition,
   CardInstance,
@@ -13,6 +14,14 @@ import type {
 } from "../types/game-state";
 
 import type {
+  CharacterPowerRegistry,
+} from "../types/character-power";
+
+import type {
+  ClassProgressionRegistry,
+} from "../types/character-progression";
+
+import type {
   CreatedClassHero,
 } from "./create-class-hero";
 
@@ -24,22 +33,19 @@ import {
   validateGameState,
 } from "../rules/invariants";
 
-import type {
-  CharacterPowerRegistry,
-} from "../types/character-power";
-
 export interface CreateClassGameOptions {
   id: string;
   mode: GameMode;
+
   heroes: CreatedClassHero[];
 
-  cardDefinitions: Record<
-    string,
-    CardDefinition
-  >;
+  cardDefinitions: Record<string, CardDefinition>;
+
+  powerDefinitions?: CharacterPowerRegistry;
+
+  classProgressions?: ClassProgressionRegistry;
 
   seed?: number;
-  powerDefinitions?: CharacterPowerRegistry;
 }
 
 export function createClassGame({
@@ -47,35 +53,41 @@ export function createClassGame({
   mode,
   heroes,
   cardDefinitions,
-  seed = 42,
   powerDefinitions = {},
+  classProgressions = {},
+  seed = 42,
 }: CreateClassGameOptions): GameState {
+  // 1. Vérifier la présence d'au moins un héros.
   if (heroes.length === 0) {
     throw new Error(
       "Une partie doit contenir au moins un héros.",
     );
   }
 
+  // 2. Récupérer les personnages.
   const players = heroes.map(
-    (hero) => hero.player,
+    (hero) => structuredClone(hero.player),
   );
 
+  // 3. Créer l'état initial de la partie.
   const game = createGame({
     id,
     mode,
     players,
     cardDefinitions,
-    seed,
     powerDefinitions,
+    classProgressions,
+    seed,
   });
 
+  // 4. Regrouper toutes les instances de cartes.
   const cards: Record<CardId, CardInstance> = {};
 
   for (const hero of heroes) {
     for (const [cardId, card] of Object.entries(
       hero.cards,
     )) {
-      if (cards[cardId]) {
+      if (Object.hasOwn(cards, cardId)) {
         throw new Error(
           `Identifiant de carte dupliqué : ${cardId}`,
         );
@@ -85,8 +97,10 @@ export function createClassGame({
     }
   }
 
+  // 5. Enregistrer les cartes dans la partie.
   game.cards = cards;
 
+  // 6. Vérifier la cohérence de l'état initial.
   const errors = validateGameState(game);
 
   if (errors.length > 0) {

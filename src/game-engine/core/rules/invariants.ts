@@ -122,6 +122,33 @@ export function validateGameState(
         `État de défaite incohérent : ${player.id}`,
       );
     }
+
+    if (
+      !Number.isSafeInteger(player.experience) ||
+      player.experience < 0
+    ) {
+      errors.push(
+        `Expérience invalide : ${player.id}`,
+      );
+    }
+
+    if (
+      !Number.isSafeInteger(player.level) ||
+      player.level < 1
+    ) {
+      errors.push(
+        `Niveau invalide : ${player.id}`,
+      );
+    }
+
+    if (
+      new Set(player.powers.availablePowerIds).size !==
+      player.powers.availablePowerIds.length
+    ) {
+      errors.push(
+        `Pouvoirs dupliqués : ${player.id}`,
+      );
+    }
   }
   
   // Vérifier la résolution en attente.

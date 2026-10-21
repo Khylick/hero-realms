@@ -76,7 +76,7 @@ export function canUseCharacterPower(
   return true;
 }
 
-export function useCharacterPower(
+export function activateCharacterPower(
   game: GameState,
   playerId: PlayerId,
   powerId: string,

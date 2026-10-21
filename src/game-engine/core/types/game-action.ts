@@ -63,4 +63,9 @@ export type GameAction =
       type: "USE_CHARACTER_POWER";
       playerId: PlayerId;
       powerId: string;
+    }
+  | {
+      type: "GAIN_EXPERIENCE";
+      playerId: PlayerId;
+      amount: number;
     };

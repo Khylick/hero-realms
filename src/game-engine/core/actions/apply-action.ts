@@ -15,8 +15,12 @@ import {
 } from "../rules/combat";
 
 import {
-  useCharacterPower,
+  activateCharacterPower,
 } from "../rules/character-powers";
+
+import {
+  gainExperience,
+} from "../rules/character-progression";
 
 export function applyAction(
   game: GameState,
@@ -119,10 +123,18 @@ export function applyAction(
       );    
 
     case "USE_CHARACTER_POWER":
-      next = useCharacterPower(
+      next = activateCharacterPower(
         game,
         action.playerId,
         action.powerId,
+      );
+      break;
+
+    case "GAIN_EXPERIENCE":
+      next = gainExperience(
+        game,
+        action.playerId,
+        action.amount,
       );
       break;
 

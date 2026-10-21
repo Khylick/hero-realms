@@ -29,6 +29,10 @@ import type {
   CharacterPowerRegistry,
 } from "./character-power";
 
+import type {
+  ClassProgressionRegistry,
+} from "./character-progression";
+
 export interface MarketState {
     deck: CardId[];
     row: CardId[];
@@ -67,4 +71,6 @@ export interface GameState {
     resolution: EffectResolutionState;
 
     powerDefinitions: CharacterPowerRegistry;
+
+    classProgressions: ClassProgressionRegistry;
 }
