@@ -233,35 +233,15 @@ describe("Character powers", () => {
     ).toBe(2);
   });
 
-
   it("ne modifie pas l'état initial", () => {
     const game = createPowerScenario();
-
-    const player = game.players["player-1"];
-    const powerId = "fighter-battle-stance";
-
-    console.log({
-      status: game.status,
-      phase: game.phase,
-      activePlayerId: game.activePlayerId,
-      availablePowerIds: player.powers.availablePowerIds,
-      usedThisTurn: player.powers.usedThisTurn,
-      usedThisEncounter: player.powers.usedThisEncounter,
-      pendingChoice: game.resolution.pendingChoice,
-      powerDefinition: game.powerDefinitions[powerId],
-      canUse: canUseCharacterPower(
-        game,
-        "player-1",
-        powerId,
-      ),
-    });
 
     const snapshot = structuredClone(game);
 
     applyAction(game, {
       type: "USE_CHARACTER_POWER",
       playerId: "player-1",
-      powerId,
+      powerId: "fighter-battle-stance",
     });
 
     expect(game).toEqual(snapshot);
