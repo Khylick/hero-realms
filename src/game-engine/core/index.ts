@@ -61,3 +61,15 @@ export * from "./types/character-progression";
 export * from "./rules/character-progression";
 
 export * from "./rules/validate-character-progression";
+
+export * from "./types/hero-profile";
+
+export * from "./factories/create-hero-profile";
+
+export * from "./factories/prepare-hero-for-encounter";
+
+export * from "./rules/customize-hero";
+
+export * from "./rules/build-customized-deck";
+
+export * from "./rules/update-hero-profile";
