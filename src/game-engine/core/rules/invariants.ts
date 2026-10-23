@@ -1,6 +1,10 @@
 import type { GameState } from "../types/game-state";
 import type { CardId } from "../types/common";
 
+import {
+  validateCampaignEncounter,
+} from "./validate-campaign-encounter";
+
 export function validateGameState(
   game: GameState,
 ): string[] {
@@ -190,9 +194,14 @@ export function validateGameState(
       
     }
   }
-  
 
-
+  if (game.campaignEncounter !== null) {
+    errors.push(
+      ...validateCampaignEncounter(
+        game.campaignEncounter,
+      ),
+    );
+  }
 
   return errors;
 }

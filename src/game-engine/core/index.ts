@@ -90,3 +90,10 @@ export * from "./types/hazard";
 export * from "./types/campaign-content";
 
 export * from "./rules/validate-campaign-content";
+export * from "./types/campaign-entities";
+export * from "./types/campaign-encounter-state";
+
+export * from "./factories/create-encounter";
+
+export * from "./rules/initialize-encounter";
+export * from "./rules/validate-campaign-encounter";

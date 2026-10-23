@@ -86,5 +86,7 @@ export function createGame({
     },
     powerDefinitions: structuredClone(powerDefinitions),
     classProgressions: structuredClone(classProgressions),
+
+    campaignEncounter: null,
   };
 }

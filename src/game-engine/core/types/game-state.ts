@@ -33,6 +33,10 @@ import type {
   ClassProgressionRegistry,
 } from "./character-progression";
 
+import type {
+  CampaignEncounterState,
+} from "./campaign-encounter-state";
+
 export interface MarketState {
     deck: CardId[];
     row: CardId[];
@@ -73,4 +77,6 @@ export interface GameState {
     powerDefinitions: CharacterPowerRegistry;
 
     classProgressions: ClassProgressionRegistry;
+
+    campaignEncounter: CampaignEncounterState | null;
 }
