@@ -73,3 +73,11 @@ export * from "./rules/customize-hero";
 export * from "./rules/build-customized-deck";
 
 export * from "./rules/update-hero-profile";
+
+export * from "./types/hero-game-content";
+
+export * from "./factories/create-hero-game";
+
+export * from "./rules/validate-hero-game-content";
+
+export * from "./rules/get-hero-preview";
