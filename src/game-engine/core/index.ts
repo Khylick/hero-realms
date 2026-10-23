@@ -81,3 +81,12 @@ export * from "./factories/create-hero-game";
 export * from "./rules/validate-hero-game-content";
 
 export * from "./rules/get-hero-preview";
+
+export * from "./types/encounter";
+export * from "./types/encounter-definition";
+export * from "./types/master";
+export * from "./types/minion";
+export * from "./types/hazard";
+export * from "./types/campaign-content";
+
+export * from "./rules/validate-campaign-content";
