@@ -22,6 +22,11 @@ import {
   gainExperience,
 } from "../rules/character-progression";
 
+import {
+  attackCampaignMaster,
+  attackCampaignMinion,
+} from "../rules/campaign-combat";
+
 export function applyAction(
   game: GameState,
   action: GameAction,
@@ -135,6 +140,23 @@ export function applyAction(
         game,
         action.playerId,
         action.amount,
+      );
+      break;
+
+    case "ATTACK_CAMPAIGN_MINION":
+      next = attackCampaignMinion(
+        game,
+        action.playerId,
+        action.minionId,
+        action.combat,
+      );
+      break;
+
+    case "ATTACK_CAMPAIGN_MASTER":
+      next = attackCampaignMaster(
+        game,
+        action.playerId,
+        action.combat,
       );
       break;
 

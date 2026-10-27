@@ -68,4 +68,15 @@ export type GameAction =
       type: "GAIN_EXPERIENCE";
       playerId: PlayerId;
       amount: number;
+    }
+  | {
+    type: "ATTACK_CAMPAIGN_MINION";
+    playerId: PlayerId;
+    minionId: EnemyId;
+    combat: number;
+    }
+  | {
+    type: "ATTACK_CAMPAIGN_MASTER";
+    playerId: PlayerId;
+    combat: number;
     };

@@ -97,3 +97,7 @@ export * from "./factories/create-encounter";
 
 export * from "./rules/initialize-encounter";
 export * from "./rules/validate-campaign-encounter";
+
+export * from "./rules/campaign-targeting";
+export * from "./rules/campaign-combat";
+export * from "./rules/start-campaign-encounter";
