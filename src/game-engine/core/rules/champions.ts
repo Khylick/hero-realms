@@ -6,6 +6,7 @@ import type {
 
 import { enqueueEffects } from "../effects/effect-queue";
 import { moveCard } from "./card-zones";
+import { areAbilityConditionsMet } from "./ability-conditions";
 
 export function canActivateChampion(
   game: GameState,
@@ -58,9 +59,13 @@ export function canActivateChampion(
     return false;
   }
 
-  // Les conditions supplémentaires seront traitées
-  // par notre futur évaluateur de conditions.
-  if (ability.conditions?.length) {
+  if (
+    !areAbilityConditionsMet(
+      game,
+      playerId,
+      ability.conditions,
+    )
+  ) {
     return false;
   }
 

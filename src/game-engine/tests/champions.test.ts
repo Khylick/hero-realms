@@ -53,6 +53,7 @@ function makeGame(): GameState {
   });
 
   game.cards = deckResult.cards;
+  game.cardDefinitions = structuredClone(demoCards);
 
   return createMarket(
     game,
@@ -155,6 +156,39 @@ describe("Champions", () => {
     expect(validateGameState(current)).toEqual([]);
   });
 
+  it("n'autorise une capacité que si ses conditions sont remplies", () => {
+    const { game, guardId } = prepareChampionGame();
+    game.cardDefinitions.royalGuard.abilities[0].conditions = [
+      { type: "healthBelow", amount: 50 },
+    ];
+
+    const played = applyAction(game, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: guardId,
+    });
+
+    expect(
+      canActivateChampion(
+        played,
+        "player-1",
+        guardId,
+        "royal-guard-ability",
+      ),
+    ).toBe(false);
+
+    played.players["player-1"].health = 49;
+
+    expect(
+      canActivateChampion(
+        played,
+        "player-1",
+        guardId,
+        "royal-guard-ability",
+      ),
+    ).toBe(true);
+  });
+
   it("interdit d'activer deux fois un champion épuisé", () => {
     const { game, guardId } = prepareChampionGame();
 
@@ -208,7 +242,7 @@ describe("Champions", () => {
     expect(validateGameState(current)).toEqual([]);
   });
 
-  it("prépare les champions au prochain tour", () => {
+  it("prépare les champions à la fin du tour de leur propriétaire", () => {
     const { game, guardId } = prepareChampionGame();
 
     let current = applyAction(game, {
@@ -241,6 +275,66 @@ describe("Champions", () => {
         "royal-guard-ability",
       ),
     ).toBe(true);
+  });
+
+  it("ne prépare pas les champions d'un joueur au tour de son adversaire", () => {
+    let game = makeGame();
+    const secondPlayer = createPlayer({
+      id: "player-2",
+      name: "Adversaire",
+      characterClass: "wizard",
+    });
+    const secondDeck = createStartingDeck(
+      secondPlayer,
+      Array(10).fill("gold"),
+      createSeededRandom(99),
+    );
+
+    game.players["player-2"] = secondDeck.player;
+    game.playerOrder.push("player-2");
+    game.cards = {
+      ...game.cards,
+      ...secondDeck.cards,
+    };
+
+    game = applyAction(game, {
+      type: "START_GAME",
+    });
+
+    const guardId = Object.keys(game.cards).find(
+      (id) => game.cards[id].definitionId === "royalGuard",
+    );
+
+    if (!guardId) {
+      throw new Error("Garde royal introuvable.");
+    }
+
+    const firstPlayer = game.players["player-1"];
+    for (const zone of Object.keys(firstPlayer.zones) as Array<
+      keyof typeof firstPlayer.zones
+    >) {
+      firstPlayer.zones[zone] =
+        firstPlayer.zones[zone].filter((id) => id !== guardId);
+    }
+    firstPlayer.zones.champions.push(guardId);
+    game.cards[guardId].exhausted = true;
+
+    game = applyAction(game, {
+      type: "END_TURN",
+      playerId: "player-1",
+    });
+
+    expect(game.cards[guardId].exhausted).toBe(false);
+    expect(game.activePlayerId).toBe("player-2");
+
+    game.cards[guardId].exhausted = true;
+    game = applyAction(game, {
+      type: "END_TURN",
+      playerId: "player-2",
+    });
+
+    expect(game.activePlayerId).toBe("player-1");
+    expect(game.cards[guardId].exhausted).toBe(true);
   });
 
   it("réinitialise les alliances des champions", () => {
@@ -348,7 +442,7 @@ describe("Champions", () => {
 
     expect(choice).not.toBeNull();
 
-    if (!choice) {
+    if (!choice || choice.type !== "selectCards") {
       throw new Error("Choix attendu.");
     }
 

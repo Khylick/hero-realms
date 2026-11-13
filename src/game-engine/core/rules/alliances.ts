@@ -7,6 +7,7 @@ import type {
 import type { CardAbility } from "../types/ability";
 
 import { enqueueEffects } from "../effects/effect-queue";
+import { areAbilityConditionsMet } from "./ability-conditions";
 
 export function getActiveFactionCards(
   game: GameState,
@@ -120,9 +121,13 @@ export function canActivateAlly(
     return false;
   }
 
-  // Les conditions supplémentaires seront prises
-  // en charge dans une prochaine évolution.
-  if (ability.conditions?.length) {
+  if (
+    !areAbilityConditionsMet(
+      game,
+      playerId,
+      ability.conditions,
+    )
+  ) {
     return false;
   }
 

@@ -4,7 +4,10 @@ import type { GameAction } from "../types/game-action";
 import { startGame, endTurn } from "../rules/turn";
 import { playCard } from "../rules/play-card";
 import { buyCard } from "../rules/market";
-import { resolveChoice } from "../effects/effect-queue";
+import {
+  resolveChoice,
+  resolveOptionalAbility,
+} from "../effects/effect-queue";
 import { validateGameState } from "../rules/invariants";
 
 import { activateAlly } from "../rules/alliances";
@@ -33,7 +36,8 @@ export function applyAction(
 ): GameState {
   if (
     game.resolution.pendingChoice &&
-    action.type !== "RESOLVE_CHOICE"
+    action.type !== "RESOLVE_CHOICE" &&
+    action.type !== "RESOLVE_OPTIONAL_ABILITY"
   ) {
     throw new Error(
       "Un choix doit être résolu avant toute autre action.",
@@ -91,6 +95,15 @@ export function applyAction(
         action.playerId,
         action.choiceId,
         action.selectedCardIds,
+      );
+      break;
+
+    case "RESOLVE_OPTIONAL_ABILITY":
+      next = resolveOptionalAbility(
+        game,
+        action.playerId,
+        action.choiceId,
+        action.accept,
       );
       break;
 

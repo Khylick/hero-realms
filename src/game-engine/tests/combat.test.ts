@@ -138,6 +138,29 @@ describe("Combat and guards", () => {
     );
   });
   
+  it("un garde épuisé ne protège plus le joueur ni ses champions", () => {
+    let game = makeCombatGame();
+
+    game = addChampion(game, "guard-1", "royalGuard");
+    game = addChampion(game, "mage-1", "battleMage");
+    game.cards["guard-1"].exhausted = true;
+
+    expect(getGuardCards(game, "player-2")).toEqual([]);
+    expect(canTargetPlayer(game, "player-2")).toBe(true);
+    expect(
+      canTargetChampion(game, "player-2", "mage-1"),
+    ).toBe(true);
+
+    const attacked = applyAction(game, {
+      type: "ATTACK_PLAYER",
+      playerId: "player-1",
+      targetPlayerId: "player-2",
+      amount: 3,
+    });
+
+    expect(attacked.players["player-2"].health).toBe(47);
+  });
+
   it("dépense du combat et étourdit un champion", () => {
     let game = makeCombatGame();
 

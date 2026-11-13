@@ -138,7 +138,7 @@ export function endTurn(
 
   const withReadyChampions = readyChampions(
     next,
-    next.activePlayerId,
+    playerId,
   );
 
   return readyCharacterPowers(

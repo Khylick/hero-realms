@@ -156,7 +156,7 @@ describe("Full turn integration", () => {
 
     expect(choice).not.toBeNull();
 
-    if (!choice) {
+    if (!choice || choice.type !== "selectCards") {
       throw new Error("Choix attendu.");
     }
 
@@ -271,7 +271,7 @@ describe("Full turn integration", () => {
     ).toThrow("Un choix doit être résolu");
   });
 
-  it("conserve les champions et prépare le joueur suivant", () => {
+  it("conserve et prépare ses champions à la fin de son tour", () => {
     let game = prepareFullTurn();
 
     game = applyAction(game, {
@@ -295,9 +295,7 @@ describe("Full turn integration", () => {
     // Le joueur 2 devient actif.
     expect(game.activePlayerId).toBe("player-2");
 
-    // Le champion du joueur 1 reste épuisé
-    // pendant le tour du joueur 2.
-    expect(game.cards["my-guard"].exhausted).toBe(true);
+    expect(game.cards["my-guard"].exhausted).toBe(false);
 
     expect(validateGameState(game)).toEqual([]);
   });

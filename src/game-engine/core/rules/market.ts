@@ -141,6 +141,19 @@ export function buyCard(
     (id) => id !== cardId,
   );
 
+  if (
+    next.market.deck.length === 0 &&
+    next.market.sacrificed.length > 0
+  ) {
+    const random = createSeededRandom(next.randomState);
+    next.market.deck = shuffle(
+      next.market.sacrificed,
+      random,
+    );
+    next.market.sacrificed = [];
+    next.randomState = random.getState();
+  }
+
   const replacement = next.market.deck.pop();
 
   if (replacement !== undefined) {

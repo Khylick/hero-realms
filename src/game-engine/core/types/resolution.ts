@@ -16,21 +16,53 @@ export interface QueuedEffect {
   effect: CardEffect;
 }
 
-export interface PendingChoice {
+export interface QueuedOptionalAbility {
+  type: "optionalAbility";
+  context: EffectContext;
+  effects: CardEffect[];
+}
+
+export type ResolutionStep =
+  | QueuedEffect
+  | QueuedOptionalAbility;
+
+export type ChoiceCardZone =
+  | "hand"
+  | "discard"
+  | "champions";
+
+export type ChoiceCardAction =
+  | "discard"
+  | "sacrifice"
+  | "stun";
+
+export interface PendingCardChoice {
   id: string;
   playerId: PlayerId;
 
   type: "selectCards";
 
-  from: "hand" | "discard";
-  action: "discard" | "sacrifice";
+  from: ChoiceCardZone;
+  action: ChoiceCardAction;
 
   amount: number;
   availableCardIds: CardId[];
 }
 
+export interface PendingOptionalAbilityChoice {
+  id: string;
+  playerId: PlayerId;
+  type: "optionalAbility";
+  context: EffectContext;
+  effects: CardEffect[];
+}
+
+export type PendingChoice =
+  | PendingCardChoice
+  | PendingOptionalAbilityChoice;
+
 export interface EffectResolutionState {
-  queue: QueuedEffect[];
+  queue: ResolutionStep[];
   pendingChoice: PendingChoice | null;
   nextChoiceId: number;
 }

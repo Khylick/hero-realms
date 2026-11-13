@@ -42,6 +42,12 @@ export type GameAction =
       selectedCardIds: CardId[];
     }
   | {
+      type: "RESOLVE_OPTIONAL_ABILITY";
+      playerId: PlayerId;
+      choiceId: string;
+      accept: boolean;
+    }
+  | {
       type: "ACTIVATE_ALLY";
       playerId: PlayerId;
       cardId: CardId;

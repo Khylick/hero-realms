@@ -32,7 +32,7 @@ export function getGuardCards(
       );
     }
 
-    return definition.isGuard === true;
+    return definition.isGuard === true && !card.exhausted;
   });
 }
 

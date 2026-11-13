@@ -24,6 +24,7 @@ export * from "./rules/resources";
 export * from "./rules/market";
 export * from "./rules/turn";
 export * from "./rules/play-card";
+export * from "./rules/ability-conditions";
 
 export * from "./effects/resolve-effects";
 

@@ -1,9 +1,12 @@
 import type { GameState } from "../types/game-state";
 import type {
   EffectContext,
-  QueuedEffect,
+  ResolutionStep,
+  ChoiceCardAction,
+  ChoiceCardZone,
 } from "../types/resolution";
 import type { CardEffect } from "../types/effect";
+import type { CardAbility } from "../types/ability";
 
 import { drawCards } from "../rules/deck";
 import { moveCard } from "../rules/card-zones";
@@ -23,7 +26,7 @@ export function enqueueEffects(
 
   const next = structuredClone(game);
 
-  const queued: QueuedEffect[] = effects.map(
+  const queued: ResolutionStep[] = effects.map(
     (effect) => ({
       context,
       effect,
@@ -33,6 +36,83 @@ export function enqueueEffects(
   next.resolution.queue.push(...queued);
 
   return processEffectQueue(next);
+}
+
+export function enqueuePlayAbilities(
+  game: GameState,
+  playerId: string,
+  sourceCardId: string,
+  abilities: CardAbility[],
+): GameState {
+  const next = structuredClone(game);
+  const queued: ResolutionStep[] = [];
+
+  for (const ability of abilities) {
+    const context = {
+      playerId,
+      sourceCardId,
+      abilityId: ability.id,
+    };
+
+    if (ability.optional && ability.effects.length > 0) {
+      queued.push({
+        type: "optionalAbility",
+        context,
+        effects: ability.effects,
+      });
+      continue;
+    }
+
+    queued.push(
+      ...ability.effects.map((effect) => ({
+        context,
+        effect,
+      })),
+    );
+  }
+
+  next.resolution.queue.push(...queued);
+  return processEffectQueue(next);
+}
+
+function requestCardChoice(
+  game: GameState,
+  playerId: string,
+  from: ChoiceCardZone,
+  action: ChoiceCardAction,
+  amount: number,
+): boolean {
+  const player = game.players[playerId];
+  const availableCardIds = [...player.zones[from]];
+
+  if (availableCardIds.length === 0) {
+    return false;
+  }
+
+  game.resolution.pendingChoice = {
+    id: `choice-${game.resolution.nextChoiceId++}`,
+    playerId,
+    type: "selectCards",
+    from,
+    action,
+    amount: Math.min(amount, availableCardIds.length),
+    availableCardIds,
+  };
+
+  return true;
+}
+
+function assertSelfTarget(
+  effect: Extract<
+    CardEffect,
+    { type: "discardCards" | "stunChampion" | "sacrificeCard" }
+  >,
+): void {
+  if (effect.target !== "self") {
+    throw new Error(
+      `La cible "${effect.target}" de l'effet ${effect.type} n'est pas prise en charge.`,
+    );
+  }
 }
 
 export function processEffectQueue(
@@ -51,8 +131,18 @@ export function processEffectQueue(
       break;
     }
 
-    const { context, effect } = queued;
+    if (!("effect" in queued)) {
+      next.resolution.pendingChoice = {
+        id: `choice-${next.resolution.nextChoiceId++}`,
+        playerId: queued.context.playerId,
+        type: "optionalAbility",
+        context: queued.context,
+        effects: queued.effects,
+      };
+      return next;
+    }
 
+    const { context, effect } = queued;
     const player = next.players[context.playerId];
 
     if (!player) {
@@ -83,6 +173,64 @@ export function processEffectQueue(
         break;
       }
 
+      case "discardCards": {
+        assertSelfTarget(effect);
+
+        if (
+          !Number.isSafeInteger(effect.amount) ||
+          effect.amount < 1
+        ) {
+          throw new Error(
+            "Nombre de cartes à défausser invalide.",
+          );
+        }
+
+        if (
+          requestCardChoice(
+            next,
+            context.playerId,
+            "hand",
+            "discard",
+            effect.amount,
+          )
+        ) {
+          return next;
+        }
+        break;
+      }
+
+      case "stunChampion":
+        assertSelfTarget(effect);
+
+        if (
+          requestCardChoice(
+            next,
+            context.playerId,
+            "champions",
+            "stun",
+            1,
+          )
+        ) {
+          return next;
+        }
+        break;
+
+      case "sacrificeCard":
+        assertSelfTarget(effect);
+
+        if (
+          requestCardChoice(
+            next,
+            context.playerId,
+            "hand",
+            "sacrifice",
+            1,
+          )
+        ) {
+          return next;
+        }
+        break;
+
       case "chooseCard": {
         if (
           effect.from === "discard" &&
@@ -102,42 +250,76 @@ export function processEffectQueue(
           );
         }
 
-        const availableCardIds = [
-          ...player.zones[effect.from],
-        ];
-
-        // Si aucune carte ne peut être choisie,
-        // l'effet est ignoré dans notre MVP.
-        if (availableCardIds.length === 0) {
-          break;
+        if (
+          requestCardChoice(
+            next,
+            context.playerId,
+            effect.from,
+            effect.action,
+            effect.amount,
+          )
+        ) {
+          return next;
         }
-
-        const amount = Math.min(
-          effect.amount,
-          availableCardIds.length,
-        );
-
-        next.resolution.pendingChoice = {
-          id: `choice-${next.resolution.nextChoiceId++}`,
-          playerId: context.playerId,
-          type: "selectCards",
-          from: effect.from,
-          action: effect.action,
-          amount,
-          availableCardIds,
-        };
-
-        return next;
+        break;
       }
 
       default:
         throw new Error(
-          `Effet non implémenté : ${effect.type}`,
+          `Effet non implémenté : ${JSON.stringify(effect)}`,
         );
     }
   }
 
   return next;
+}
+
+export function resolveOptionalAbility(
+  game: GameState,
+  playerId: string,
+  choiceId: string,
+  accept: boolean,
+): GameState {
+  if (
+    game.status !== "playing" ||
+    game.phase !== "main"
+  ) {
+    throw new Error(
+      "Impossible de résoudre une capacité optionnelle hors de la phase principale.",
+    );
+  }
+
+  const choice = game.resolution.pendingChoice;
+
+  if (!choice || choice.type !== "optionalAbility") {
+    throw new Error(
+      "Aucune capacité optionnelle n'est en attente.",
+    );
+  }
+
+  if (choice.id !== choiceId) {
+    throw new Error("Identifiant de choix invalide.");
+  }
+
+  if (choice.playerId !== playerId) {
+    throw new Error(
+      "Ce choix appartient à un autre joueur.",
+    );
+  }
+
+  const next = structuredClone(game);
+  next.resolution.pendingChoice = null;
+
+  if (accept) {
+    next.resolution.queue.unshift(
+      ...choice.effects.map((effect) => ({
+        context: choice.context,
+        effect,
+      })),
+    );
+  }
+
+  return processEffectQueue(next);
 }
 
 export function resolveChoice(
@@ -157,7 +339,7 @@ export function resolveChoice(
 
   const choice = game.resolution.pendingChoice;
 
-  if (!choice) {
+  if (!choice || choice.type !== "selectCards") {
     throw new Error("Aucun choix en attente.");
   }
 
@@ -207,10 +389,15 @@ export function resolveChoice(
       player,
       cardId,
       choice.from,
-      choice.action === "discard"
+      choice.action === "discard" || choice.action === "stun"
         ? "discard"
         : "sacrificed",
     );
+
+    if (choice.action === "stun") {
+      next.cards[cardId].exhausted = false;
+      next.cards[cardId].usedAbilities = [];
+    }
   }
 
   next.players[playerId] = player;

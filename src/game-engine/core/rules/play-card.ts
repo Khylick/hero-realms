@@ -1,8 +1,10 @@
 import type { GameState } from "../types/game-state";
-import type { CardEffect } from "../types/effect";
 
-import { enqueueEffects } from "../effects/effect-queue";
+import {
+  enqueuePlayAbilities,
+} from "../effects/effect-queue";
 import { moveCard } from "./card-zones";
+import { areAbilityConditionsMet } from "./ability-conditions";
 
 export function playCard(
   game: GameState,
@@ -57,26 +59,6 @@ export function playCard(
     throw new Error("Définition de carte inconnue.");
   }
 
-  const abilities = definition.abilities.filter(
-    (ability) => ability.trigger === "onPlay",
-  );
-
-  for (const ability of abilities) {
-    if (
-      ability.optional ||
-      ability.conditions?.length
-    ) {
-      throw new Error(
-        "Cette capacité nécessite une résolution avancée.",
-      );
-    }
-  }
-
-  const effects: CardEffect[] = abilities.flatMap(
-    (ability) => ability.effects,
-  );
-
-  
   const destination =
     definition.type === "champion"
       ? "champions"
@@ -94,13 +76,20 @@ export function playCard(
     next.cards[cardId].usedAbilities = [];
   }
 
-  return enqueueEffects(
+  const abilities = definition.abilities.filter(
+    (ability) =>
+      ability.trigger === "onPlay" &&
+      areAbilityConditionsMet(
+        next,
+        playerId,
+        ability.conditions,
+      ),
+  );
+
+  return enqueuePlayAbilities(
     next,
-    {
-      playerId,
-      sourceCardId: cardId,
-      abilityId: abilities[0]?.id ?? "none",
-    },
-    effects,
+    playerId,
+    cardId,
+    abilities,
   );
 }

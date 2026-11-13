@@ -165,10 +165,11 @@ export function validateGameState(
       errors.push(
         "Le choix appartient à un joueur inconnu.",
       );
-    } else {
+    } else if (choice.type === "selectCards") {
       if (
         !Number.isSafeInteger(choice.amount) ||
-        choice.amount < 1
+        choice.amount < 1 ||
+        choice.amount > choice.availableCardIds.length
       ) {
         errors.push(
           "Nombre de cartes du choix invalide."
@@ -191,7 +192,19 @@ export function validateGameState(
           );
         }
       }
-      
+
+      if (
+        choice.action === "stun" &&
+        choice.from !== "champions"
+      ) {
+        errors.push(
+          "Un choix d'étourdissement doit cibler un champion."
+        );
+      }
+    } else if (choice.context.playerId !== choice.playerId) {
+      errors.push(
+        "La capacité optionnelle appartient à un autre joueur."
+      );
     }
   }
 

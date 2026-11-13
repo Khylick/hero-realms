@@ -49,6 +49,7 @@ function makeGame(): GameState {
     seed: 123,
   });
 
+  game.cardDefinitions = structuredClone(demoCards);
   game.cards = deckResult.cards;
 
   return createMarket(
@@ -197,6 +198,45 @@ describe("Ally abilities", () => {
     ).toContain("imperial-scout-ally");
 
     expect(validateGameState(current)).toEqual([]);
+  });
+
+  it("n'autorise une alliance que si ses conditions sont remplies", () => {
+    const { game, bladeId, scoutId } = prepareGame();
+    game.cardDefinitions.imperialScout.abilities[1].conditions = [
+      { type: "healthBelow", amount: 40 },
+    ];
+
+    let current = applyAction(game, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: bladeId,
+    });
+
+    current = applyAction(current, {
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: scoutId,
+    });
+
+    expect(
+      canActivateAlly(
+        current,
+        "player-1",
+        scoutId,
+        "imperial-scout-ally",
+      ),
+    ).toBe(false);
+
+    current.players["player-1"].health = 39;
+
+    expect(
+      canActivateAlly(
+        current,
+        "player-1",
+        scoutId,
+        "imperial-scout-ally",
+      ),
+    ).toBe(true);
   });
 
   it("refuse une double activation", () => {
@@ -431,7 +471,7 @@ describe("Ally abilities", () => {
 
     expect(choice).not.toBeNull();
 
-    if (!choice) {
+    if (!choice || choice.type !== "selectCards") {
       throw new Error("Choix attendu.");
     }
 
