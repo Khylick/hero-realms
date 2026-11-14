@@ -1,3 +1,5 @@
+import type { MasterLevel } from "./master-turn";
+
 export interface MasterDefinition {
   id: string;
   name: string;
@@ -11,9 +13,7 @@ export interface MasterDefinition {
 
   // Identifiants des comportements disponibles.
   behaviorIds: string[];
+  levels?: [MasterLevel, MasterLevel];
 }
 
-export type MasterRegistry = Record<
-  string,
-  MasterDefinition
->;
+export type MasterRegistry = Record<string, MasterDefinition>;

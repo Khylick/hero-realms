@@ -1,11 +1,19 @@
-
-import type {
-  CardId,
-  EnemyId,
-  PlayerId,
-} from "./common";
+import type { CardId, EnemyId, PlayerId } from "./common";
 
 export type GameAction =
+  | {
+      type: "RESOLVE_MASTER_CHOICE";
+      playerId: PlayerId;
+      choiceId: string;
+      selectedId: string;
+    }
+  | { type: "CLEAR_HAZARD"; playerId: PlayerId; hazardId: string }
+  | {
+      type: "SACRIFICE_CARD";
+      playerId: PlayerId;
+      cardId: CardId;
+      abilityId: string;
+    }
   | {
       type: "START_GAME";
     }
@@ -76,13 +84,13 @@ export type GameAction =
       amount: number;
     }
   | {
-    type: "ATTACK_CAMPAIGN_MINION";
-    playerId: PlayerId;
-    minionId: EnemyId;
-    combat: number;
+      type: "ATTACK_CAMPAIGN_MINION";
+      playerId: PlayerId;
+      minionId: EnemyId;
+      combat: number;
     }
   | {
-    type: "ATTACK_CAMPAIGN_MASTER";
-    playerId: PlayerId;
-    combat: number;
+      type: "ATTACK_CAMPAIGN_MASTER";
+      playerId: PlayerId;
+      combat: number;
     };

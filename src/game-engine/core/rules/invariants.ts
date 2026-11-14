@@ -1,13 +1,9 @@
 import type { GameState } from "../types/game-state";
 import type { CardId } from "../types/common";
 
-import {
-  validateCampaignEncounter,
-} from "./validate-campaign-encounter";
+import { validateCampaignEncounter } from "./validate-campaign-encounter";
 
-export function validateGameState(
-  game: GameState,
-): string[] {
+export function validateGameState(game: GameState): string[] {
   const errors: string[] = [];
   const seenCards = new Set<CardId>();
 
@@ -27,32 +23,19 @@ export function validateGameState(
     const card = game.cards[cardId];
 
     if (!card) {
-      errors.push(
-        `La carte ${cardId} n'existe pas dans le registre.`,
-      );
+      errors.push(`La carte ${cardId} n'existe pas dans le registre.`);
       return;
     }
 
-    if (
-      expectedOwnerId !== undefined &&
-      card.ownerId !== expectedOwnerId
-    ) {
-      errors.push(
-        `La carte ${cardId} possède un propriétaire incorrect.`,
-      );
+    if (expectedOwnerId !== undefined && card.ownerId !== expectedOwnerId) {
+      errors.push(`La carte ${cardId} possède un propriétaire incorrect.`);
     }
   }
 
   for (const player of Object.values(game.players)) {
-    for (const [zoneName, cardIds] of Object.entries(
-      player.zones,
-    )) {
+    for (const [zoneName, cardIds] of Object.entries(player.zones)) {
       for (const cardId of cardIds) {
-        registerCard(
-          cardId,
-          `${player.id}.${zoneName}`,
-          player.id,
-        );
+        registerCard(cardId, `${player.id}.${zoneName}`, player.id);
       }
     }
   }
@@ -69,33 +52,21 @@ export function validateGameState(
     registerCard(cardId, "market.sacrificed", null);
   }
 
-  if (game.master) {
-    for (const cardId of game.master.deck) {
-      registerCard(cardId, "master.deck");
-    }
-
-    for (const cardId of game.master.discard) {
-      registerCard(cardId, "master.discard");
-    }
+  for (const cardId of game.market.fireGems) {
+    registerCard(cardId, "market.fireGems", null);
   }
 
   for (const [cardId, card] of Object.entries(game.cards)) {
     if (card.id !== cardId) {
-      errors.push(
-        `Identifiant incohérent pour la carte ${cardId}.`,
-      );
+      errors.push(`Identifiant incohérent pour la carte ${cardId}.`);
     }
 
     if (!game.cardDefinitions[card.definitionId]) {
-      errors.push(
-        `Définition inconnue pour la carte ${cardId}.`,
-      );
+      errors.push(`Définition inconnue pour la carte ${cardId}.`);
     }
 
     if (!seenCards.has(cardId)) {
-      errors.push(
-        `La carte ${cardId} n'appartient à aucune zone.`,
-      );
+      errors.push(`La carte ${cardId} n'appartient à aucune zone.`);
     }
   }
 
@@ -105,56 +76,34 @@ export function validateGameState(
       const value = player.resources[resource];
 
       if (!Number.isSafeInteger(value) || value < 0) {
-        errors.push(
-          `Ressource invalide : ${player.id}.${resource}`,
-        );
+        errors.push(`Ressource invalide : ${player.id}.${resource}`);
       }
     }
 
-    if (
-      !Number.isSafeInteger(player.health) ||
-      player.health < 0 ||
-      player.health > player.maxHealth
-    ) {
-      errors.push(
-        `Points de vie invalides : ${player.id}`,
-      );
+    if (!Number.isSafeInteger(player.health) || player.health < 0) {
+      errors.push(`Points de vie invalides : ${player.id}`);
     }
 
     if (player.defeated !== (player.health === 0)) {
-      errors.push(
-        `État de défaite incohérent : ${player.id}`,
-      );
+      errors.push(`État de défaite incohérent : ${player.id}`);
     }
 
-    if (
-      !Number.isSafeInteger(player.experience) ||
-      player.experience < 0
-    ) {
-      errors.push(
-        `Expérience invalide : ${player.id}`,
-      );
+    if (!Number.isSafeInteger(player.experience) || player.experience < 0) {
+      errors.push(`Expérience invalide : ${player.id}`);
     }
 
-    if (
-      !Number.isSafeInteger(player.level) ||
-      player.level < 1
-    ) {
-      errors.push(
-        `Niveau invalide : ${player.id}`,
-      );
+    if (!Number.isSafeInteger(player.level) || player.level < 1) {
+      errors.push(`Niveau invalide : ${player.id}`);
     }
 
     if (
       new Set(player.powers.availablePowerIds).size !==
       player.powers.availablePowerIds.length
     ) {
-      errors.push(
-        `Pouvoirs dupliqués : ${player.id}`,
-      );
+      errors.push(`Pouvoirs dupliqués : ${player.id}`);
     }
   }
-  
+
   // Vérifier la résolution en attente.
   const choice = game.resolution.pendingChoice;
 
@@ -162,58 +111,38 @@ export function validateGameState(
     const player = game.players[choice.playerId];
 
     if (!player) {
-      errors.push(
-        "Le choix appartient à un joueur inconnu.",
-      );
+      errors.push("Le choix appartient à un joueur inconnu.");
     } else if (choice.type === "selectCards") {
       if (
         !Number.isSafeInteger(choice.amount) ||
         choice.amount < 1 ||
         choice.amount > choice.availableCardIds.length
       ) {
-        errors.push(
-          "Nombre de cartes du choix invalide."
-        );
+        errors.push("Nombre de cartes du choix invalide.");
       }
 
       if (
-        new Set(choice.availableCardIds).size !==
-        choice.availableCardIds.length
+        new Set(choice.availableCardIds).size !== choice.availableCardIds.length
       ) {
-        errors.push(
-          "Le choix contient des cartes dupliquées.",
-        );
+        errors.push("Le choix contient des cartes dupliquées.");
       }
 
       for (const cardId of choice.availableCardIds) {
         if (!player.zones[choice.from].includes(cardId)) {
-          errors.push(
-            `Carte indisponible dans le choix : ${cardId}`,
-          );
+          errors.push(`Carte indisponible dans le choix : ${cardId}`);
         }
       }
 
-      if (
-        choice.action === "stun" &&
-        choice.from !== "champions"
-      ) {
-        errors.push(
-          "Un choix d'étourdissement doit cibler un champion."
-        );
+      if (choice.action === "stun" && choice.from !== "champions") {
+        errors.push("Un choix d'étourdissement doit cibler un champion.");
       }
     } else if (choice.context.playerId !== choice.playerId) {
-      errors.push(
-        "La capacité optionnelle appartient à un autre joueur."
-      );
+      errors.push("La capacité optionnelle appartient à un autre joueur.");
     }
   }
 
   if (game.campaignEncounter !== null) {
-    errors.push(
-      ...validateCampaignEncounter(
-        game.campaignEncounter,
-      ),
-    );
+    errors.push(...validateCampaignEncounter(game.campaignEncounter));
   }
 
   return errors;

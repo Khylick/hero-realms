@@ -2,10 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { validateGameState } from "../core";
 
-import {
-  addCardToZone,
-  createScenario,
-} from "./helpers/scenario-builder";
+import { addCardToZone, createScenario } from "./helpers/scenario-builder";
 
 describe("Advanced invariants", () => {
   it("accepte un état valide", () => {
@@ -23,15 +20,13 @@ describe("Advanced invariants", () => {
 
     console.log("Erreurs ressources :", errors);
 
-    expect(errors).toContain(
-        "Ressource invalide : player-1.combat",
-    );
+    expect(errors).toContain("Ressource invalide : player-1.combat");
   });
 
   it("détecte des points de vie invalides", () => {
     const game = createScenario();
 
-    game.players["player-1"].health = 999;
+    game.players["player-1"].health = -1;
 
     expect(validateGameState(game)).toContain(
       "Points de vie invalides : player-1",
@@ -48,29 +43,17 @@ describe("Advanced invariants", () => {
 
     console.log("Erreurs défaite :", errors);
 
-    expect(errors).toContain(
-      "État de défaite incohérent : player-1",
-    );
+    expect(errors).toContain("État de défaite incohérent : player-1");
   });
 
   it("détecte une carte dupliquée entre deux zones", () => {
     let game = createScenario();
 
-    game = addCardToZone(
-      game,
-      "player-1",
-      "gold-1",
-      "gold",
-      "hand",
-    );
+    game = addCardToZone(game, "player-1", "gold-1", "gold", "hand");
 
-    game.players["player-1"].zones.discard.push(
-      "gold-1",
-    );
+    game.players["player-1"].zones.discard.push("gold-1");
 
-    expect(
-      validateGameState(game).length,
-    ).toBeGreaterThan(0);
+    expect(validateGameState(game).length).toBeGreaterThan(0);
   });
 
   it("détecte un choix avec des cartes indisponibles", () => {

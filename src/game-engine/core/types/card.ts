@@ -1,16 +1,8 @@
-import type {
-  CardDefinitionId,
-  CardId,
-  Faction,
-  PlayerId,
-} from "./common";
+import type { CardDefinitionId, CardId, Faction, PlayerId } from "./common";
 
 import type { CardAbility } from "./ability";
 
-export type CardType =
-  | "action"
-  | "item"
-  | "champion";
+export type CardType = "action" | "item" | "champion";
 
 export interface CardDefinition {
   id: CardDefinitionId;
@@ -27,6 +19,7 @@ export interface CardDefinition {
   abilities: CardAbility[];
 
   image?: string;
+  isFireGem?: boolean;
 }
 
 export interface CardInstance {
@@ -34,6 +27,7 @@ export interface CardInstance {
   definitionId: CardDefinitionId;
 
   ownerId: PlayerId | null;
+  origin: "personal" | "market" | "fireGem";
 
   exhausted: boolean;
 

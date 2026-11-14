@@ -1,0 +1,378 @@
+.campaign-setup,
+.campaign-board {
+  color: #e2e8f0;
+  background: #0b1220;
+  min-height: 100vh;
+  padding: clamp(16px, 3vw, 40px);
+}
+.campaign-setup {
+  max-width: 1050px;
+  margin: auto;
+}
+.campaign-setup h1,
+.board-header h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  color: #fcd38c;
+  margin: 8px 0;
+}
+.campaign-board h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+.campaign-board h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 8px 0;
+}
+.campaign-board p,
+.campaign-setup p {
+  margin: 8px 0;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #b7c5d9;
+}
+.muted,
+.card-type {
+  color: #a8b7ca;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.prototype-note {
+  color: #e8c58a;
+  border-left: 3px solid #b98a43;
+  padding: 8px 14px;
+  background: #30281a;
+}
+.campaign-board button,
+.campaign-setup button {
+  border: 1px solid #52627a;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #24344d;
+  color: #f1f5f9;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.campaign-board button:hover:enabled,
+.campaign-setup button:hover:enabled {
+  background: #3a4b65;
+  border-color: #f0bd66;
+}
+.campaign-board button:disabled,
+.campaign-setup button:disabled {
+  opacity: 0.45;
+}
+.campaign-board .primary-button,
+.campaign-setup .primary-button {
+  background: #a56313;
+  border-color: #d89d45;
+  font-weight: 700;
+}
+.campaign-board .quiet-button,
+.campaign-setup .quiet-button {
+  background: transparent;
+}
+.campaign-board :focus-visible,
+.campaign-setup :focus-visible {
+  outline: 3px solid #fcd38c;
+  outline-offset: 3px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  max-width: 400px;
+}
+.field input,
+.attack-input {
+  background: #142033;
+  color: #f1f5f9;
+  padding: 10px;
+  border: 1px solid #52627a;
+  border-radius: 6px;
+}
+.class-picker {
+  border: 0;
+  padding: 0;
+  margin: 28px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+.class-picker legend {
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.class-option {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  background: #162136;
+  cursor: pointer;
+}
+.class-option.selected {
+  border-color: #f0bd66;
+  background: #30291f;
+}
+.class-option span,
+.class-option small {
+  font-size: 0.8rem;
+  color: #bdc9d9;
+}
+.class-option input {
+  align-self: flex-start;
+  accent-color: #eab45e;
+}
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.resource-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  border: 1px solid #52627a;
+  border-radius: 10px;
+  padding: 16px 20px;
+  background: #172337;
+  margin-bottom: 24px;
+}
+.resource-bar strong {
+  color: #fcd38c;
+}
+.resource-bar button {
+  margin-left: auto;
+}
+.board-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+}
+.board-section {
+  background: #111d2e;
+  border: 1px solid #2d3c53;
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.section-heading h2 {
+  margin: 0;
+}
+.section-heading label {
+  font-size: 0.8rem;
+}
+.attack-input {
+  width: 76px;
+  margin-left: 8px;
+}
+.card-grid,
+.enemy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 12px;
+}
+.game-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #52627a;
+  border-top: 4px solid #a3aebd;
+  border-radius: 8px;
+  padding: 12px;
+  background: linear-gradient(155deg, #253348, #172237);
+  min-height: 200px;
+}
+.faction-imperial {
+  border-top-color: #e9bd55;
+}
+.faction-guild {
+  border-top-color: #53a6e4;
+}
+.faction-necros {
+  border-top-color: #e77986;
+}
+.faction-wild {
+  border-top-color: #65c7a0;
+}
+.game-card.exhausted {
+  background: repeating-linear-gradient(
+    135deg,
+    #142033,
+    #142033 8px,
+    #1c293d 8px,
+    #1c293d 10px
+  );
+}
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #c0cede;
+  gap: 8px;
+}
+.card-effects {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 16px;
+}
+.card-effects li + li {
+  margin-top: 6px;
+}
+.card-controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.enemy-card {
+  border: 1px solid #755760;
+  border-radius: 8px;
+  padding: 16px;
+  background: #291f2d;
+}
+.master-card {
+  border-color: #be8850;
+  background: linear-gradient(135deg, #352a24, #281e2d);
+}
+.enemy-health {
+  font-size: 1.5rem;
+  color: #f5b8bb;
+}
+.power-card + .power-card {
+  border-top: 1px solid #34435b;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+.power-card p {
+  font-size: 0.85rem;
+}
+.supply-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  margin-top: 16px;
+}
+.hazard-card {
+  background: #30251d;
+  border: 1px solid #9c754b;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 14px;
+}
+.hazard-card p {
+  font-size: 0.8rem;
+}
+.decision-panel,
+.result-panel {
+  padding: 22px;
+  margin: 20px 0;
+  border: 2px solid #f0bd66;
+  border-radius: 10px;
+  background: #30281d;
+}
+.decision-panel button,
+.result-panel button {
+  margin: 8px 8px 0 0;
+}
+.choice-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 18px 0;
+}
+.choice-cards label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.result-panel.victory {
+  background: #15352f;
+  border-color: #65c7a0;
+}
+.result-panel.defeat {
+  background: #3b202b;
+  border-color: #e77986;
+}
+.error-message {
+  padding: 14px;
+  border: 1px solid #fda4af;
+  color: #fecdd3;
+  background: #491d2c;
+  border-radius: 6px;
+}
+.game-log {
+  padding-left: 20px;
+  font-size: 0.8rem;
+  color: #bdc9d9;
+  line-height: 1.7;
+  max-height: 380px;
+  overflow-y: auto;
+}
+.count {
+  color: #f0bd66;
+  font-size: 0.85rem;
+}
+.campaign-board details {
+  margin: 10px 0;
+  font-size: 0.85rem;
+}
+.campaign-board summary {
+  cursor: pointer;
+}
+.campaign-board details ul {
+  padding-left: 18px;
+  list-style: disc;
+}
+@media (max-width: 1050px) {
+  .board-columns {
+    grid-template-columns: 1fr;
+  }
+  .board-columns aside {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+}
+@media (max-width: 540px) {
+  .board-header {
+    flex-direction: column;
+  }
+  .resource-bar {
+    gap: 12px;
+  }
+  .resource-bar button {
+    width: 100%;
+    margin: 0;
+  }
+  .card-grid,
+  .enemy-grid {
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  }
+  .board-section {
+    padding: 12px;
+  }
+}

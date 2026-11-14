@@ -1,83 +1,56 @@
-import type {
-  GameState,
-} from "../types/game-state";
+import type { GameState } from "../types/game-state";
 
-import type {
-  PlayerId,
-} from "../types/common";
+import type { PlayerId } from "../types/common";
 
 import {
   canTargetCampaignMaster,
   canTargetCampaignMinion,
 } from "./campaign-targeting";
+import { updateCampaignOutcome } from "./campaign-outcome";
 
 function assertCanAttackCampaignEnemy(
   game: GameState,
   playerId: PlayerId,
   combat: number,
 ): void {
-  if (
-    game.status !== "playing" ||
-    game.phase !== "main"
-  ) {
+  if (game.status !== "playing" || game.phase !== "main") {
     throw new Error(
       "Une attaque de campagne nécessite une partie en cours et la phase principale.",
     );
   }
 
   if (game.activePlayerId !== playerId) {
-    throw new Error(
-      "Seul le joueur actif peut attaquer.",
-    );
+    throw new Error("Seul le joueur actif peut attaquer.");
   }
 
-  if (
-    game.resolution.pendingChoice ||
-    game.resolution.queue.length > 0
-  ) {
-    throw new Error(
-      "Une résolution est déjà en attente.",
-    );
+  if (game.resolution.pendingChoice || game.resolution.queue.length > 0) {
+    throw new Error("Une résolution est déjà en attente.");
   }
 
   const encounter = game.campaignEncounter;
 
-  if (
-    !encounter ||
-    encounter.progress.status !== "inProgress"
-  ) {
-    throw new Error(
-      "Aucune rencontre de campagne en cours.",
-    );
+  if (!encounter || encounter.progress.status !== "inProgress") {
+    throw new Error("Aucune rencontre de campagne en cours.");
   }
 
   const player = game.players[playerId];
 
   if (!player) {
-    throw new Error(
-      `Joueur introuvable : ${playerId}.`,
-    );
+    throw new Error(`Joueur introuvable : ${playerId}.`);
   }
 
   if (player.defeated || player.health <= 0) {
-    throw new Error(
-      "Un héros vaincu ne peut pas attaquer.",
-    );
+    throw new Error("Un héros vaincu ne peut pas attaquer.");
   }
 
-  if (
-    !Number.isSafeInteger(combat) ||
-    combat <= 0
-  ) {
+  if (!Number.isSafeInteger(combat) || combat <= 0) {
     throw new Error(
       "Le combat dépensé doit être un entier strictement positif.",
     );
   }
 
   if (player.resources.combat < combat) {
-    throw new Error(
-      "Le héros ne possède pas assez de combat.",
-    );
+    throw new Error("Le héros ne possède pas assez de combat.");
   }
 }
 
@@ -87,26 +60,18 @@ export function attackCampaignMinion(
   minionId: string,
   combat: number,
 ): GameState {
-  assertCanAttackCampaignEnemy(
-    game,
-    playerId,
-    combat,
-  );
+  assertCanAttackCampaignEnemy(game, playerId, combat);
 
   const encounter = game.campaignEncounter!;
 
   const minion = encounter.minions[minionId];
 
   if (!minion) {
-    throw new Error(
-      `Sbire introuvable : ${minionId}.`,
-    );
+    throw new Error(`Sbire introuvable : ${minionId}.`);
   }
 
-  if (!canTargetCampaignMinion(encounter, minionId)) {
-    throw new Error(
-      "Ce sbire ne peut pas être ciblé.",
-    );
+  if (!canTargetCampaignMinion(encounter, minionId, playerId)) {
+    throw new Error("Ce sbire ne peut pas être ciblé.");
   }
 
   const next = structuredClone(game);
@@ -114,15 +79,17 @@ export function attackCampaignMinion(
   const nextEncounter = next.campaignEncounter!;
   const nextMinion = nextEncounter.minions[minionId];
 
-  const damage = Math.min(
-    combat,
-    nextMinion.health,
-  );
+  const damage = Math.min(combat, nextMinion.health);
 
   nextMinion.health -= damage;
 
   if (nextMinion.health === 0) {
     nextMinion.defeated = true;
+    if (nextMinion.sourceCardId)
+      nextEncounter.master.discard.push(nextMinion.sourceCardId);
+    next.log.push(
+      `Sbire assommé : ${nextEncounter.content.minions[nextMinion.definitionId].name}.`,
+    );
   }
 
   next.players[playerId].resources.combat -= combat;
@@ -135,28 +102,19 @@ export function attackCampaignMaster(
   playerId: PlayerId,
   combat: number,
 ): GameState {
-  assertCanAttackCampaignEnemy(
-    game,
-    playerId,
-    combat,
-  );
+  assertCanAttackCampaignEnemy(game, playerId, combat);
 
   const encounter = game.campaignEncounter!;
 
-  if (!canTargetCampaignMaster(encounter)) {
-    throw new Error(
-      "Le maître ne peut pas être ciblé.",
-    );
+  if (!canTargetCampaignMaster(encounter, playerId)) {
+    throw new Error("Le maître ne peut pas être ciblé.");
   }
 
   const next = structuredClone(game);
 
   const nextMaster = next.campaignEncounter!.master;
 
-  const damage = Math.min(
-    combat,
-    nextMaster.health,
-  );
+  const damage = Math.min(combat, nextMaster.health);
 
   nextMaster.health -= damage;
 
@@ -166,5 +124,7 @@ export function attackCampaignMaster(
 
   next.players[playerId].resources.combat -= combat;
 
+  next.log.push(`Le Maître subit ${damage} dégâts.`);
+  updateCampaignOutcome(next);
   return next;
 }

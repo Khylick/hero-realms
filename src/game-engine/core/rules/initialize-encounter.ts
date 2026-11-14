@@ -1,14 +1,8 @@
-import type {
-  GameState,
-} from "../types/game-state";
+import type { GameState } from "../types/game-state";
 
-import type {
-  CampaignContent,
-} from "../types/campaign-content";
+import type { CampaignContent } from "../types/campaign-content";
 
-import {
-  createEncounter,
-} from "../factories/create-encounter";
+import { createEncounter } from "../factories/create-encounter";
 
 export interface InitializeEncounterOptions {
   encounterId: string;
@@ -17,10 +11,7 @@ export interface InitializeEncounterOptions {
 
 export function initializeEncounter(
   game: GameState,
-  {
-    encounterId,
-    content,
-  }: InitializeEncounterOptions,
+  { encounterId, content }: InitializeEncounterOptions,
 ): GameState {
   if (game.status !== "setup") {
     throw new Error(
@@ -29,9 +20,7 @@ export function initializeEncounter(
   }
 
   if (game.campaignEncounter !== null) {
-    throw new Error(
-      "Une rencontre est déjà initialisée.",
-    );
+    throw new Error("Une rencontre est déjà initialisée.");
   }
 
   const encounter = createEncounter({
@@ -41,7 +30,9 @@ export function initializeEncounter(
 
   const next = structuredClone(game);
 
+  next.format = "campaign";
   next.campaignEncounter = encounter;
+  encounter.playerOrder = [...game.playerOrder];
 
   return next;
 }

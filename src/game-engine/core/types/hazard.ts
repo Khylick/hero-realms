@@ -1,3 +1,5 @@
+import type { MasterEffect } from "./master-turn";
+
 export type HazardTrigger =
   | "onEncounterStart"
   | "onMasterTurnStart"
@@ -11,9 +13,8 @@ export interface HazardDefinition {
   trigger: HazardTrigger;
   duration: number | null;
   effectIds: string[];
+  effects?: MasterEffect[];
+  clearCost?: { resource: "gold" | "combat"; amount: number };
 }
 
-export type HazardRegistry = Record<
-  string,
-  HazardDefinition
->;
+export type HazardRegistry = Record<string, HazardDefinition>;

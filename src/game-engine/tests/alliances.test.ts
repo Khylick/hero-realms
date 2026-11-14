@@ -14,8 +14,7 @@ import {
   type GameState,
 } from "../core";
 
-import { demoCards } from
-  "../../game-content/cards/demo-cards";
+import { demoCards } from "../../game-content/cards/demo-cards";
 
 function makeGame(): GameState {
   const player = createPlayer({
@@ -52,10 +51,7 @@ function makeGame(): GameState {
   game.cardDefinitions = structuredClone(demoCards);
   game.cards = deckResult.cards;
 
-  return createMarket(
-    game,
-    Array(10).fill("dagger"),
-  );
+  return createMarket(game, Array(10).fill("dagger"));
 }
 
 function prepareGame(): {
@@ -71,13 +67,11 @@ function prepareGame(): {
   const player = game.players["player-1"];
 
   const bladeId = Object.keys(game.cards).find(
-    (id) =>
-      game.cards[id].definitionId === "runicBlade",
+    (id) => game.cards[id].definitionId === "runicBlade",
   );
 
   const scoutId = Object.keys(game.cards).find(
-    (id) =>
-      game.cards[id].definitionId === "imperialScout",
+    (id) => game.cards[id].definitionId === "imperialScout",
   );
 
   if (!bladeId || !scoutId) {
@@ -121,17 +115,10 @@ describe("Ally abilities", () => {
       cardId: bladeId,
     });
 
-    expect(
-      hasAlly(played, "player-1", bladeId),
-    ).toBe(false);
+    expect(hasAlly(played, "player-1", bladeId)).toBe(false);
 
     expect(
-      canActivateAlly(
-        played,
-        "player-1",
-        bladeId,
-        "runic-blade-ally",
-      ),
+      canActivateAlly(played, "player-1", bladeId, "runic-blade-ally"),
     ).toBe(false);
   });
 
@@ -150,20 +137,17 @@ describe("Ally abilities", () => {
       cardId: scoutId,
     });
 
-    const available = getAvailableAllyAbilities(
-      current,
-      "player-1",
-    );
+    const available = getAvailableAllyAbilities(current, "player-1");
 
     expect(available).toHaveLength(2);
 
-    expect(
-      available.map((item) => item.ability.id),
-    ).toContain("runic-blade-ally");
+    expect(available.map((item) => item.ability.id)).toContain(
+      "runic-blade-ally",
+    );
 
-    expect(
-      available.map((item) => item.ability.id),
-    ).toContain("imperial-scout-ally");
+    expect(available.map((item) => item.ability.id)).toContain(
+      "imperial-scout-ally",
+    );
   });
 
   it("active une alliance et applique ses effets", () => {
@@ -193,9 +177,9 @@ describe("Ally abilities", () => {
     expect(player.resources.combat).toBe(5);
     expect(player.resources.gold).toBe(1);
 
-    expect(
-      current.cards[scoutId].usedAbilities,
-    ).toContain("imperial-scout-ally");
+    expect(current.cards[scoutId].usedAbilities).toContain(
+      "imperial-scout-ally",
+    );
 
     expect(validateGameState(current)).toEqual([]);
   });
@@ -219,23 +203,13 @@ describe("Ally abilities", () => {
     });
 
     expect(
-      canActivateAlly(
-        current,
-        "player-1",
-        scoutId,
-        "imperial-scout-ally",
-      ),
+      canActivateAlly(current, "player-1", scoutId, "imperial-scout-ally"),
     ).toBe(false);
 
     current.players["player-1"].health = 39;
 
     expect(
-      canActivateAlly(
-        current,
-        "player-1",
-        scoutId,
-        "imperial-scout-ally",
-      ),
+      canActivateAlly(current, "player-1", scoutId, "imperial-scout-ally"),
     ).toBe(true);
   });
 
@@ -268,9 +242,7 @@ describe("Ally abilities", () => {
         cardId: scoutId,
         abilityId: "imperial-scout-ally",
       }),
-    ).toThrow(
-      "Cette capacité d'alliance n'est pas disponible.",
-    );
+    ).toThrow("Cette capacité d'alliance n'est pas disponible.");
   });
 
   it("fonctionne quel que soit l'ordre des cartes", () => {
@@ -288,52 +260,42 @@ describe("Ally abilities", () => {
       cardId: bladeId,
     });
 
-    expect(
-      getAvailableAllyAbilities(
-        current,
-        "player-1",
-      ),
-    ).toHaveLength(2);
+    expect(getAvailableAllyAbilities(current, "player-1")).toHaveLength(2);
   });
 
-  
   it("résout un effet de pioche issu d'une alliance", () => {
     const { game, bladeId, scoutId } = prepareGame();
 
     let current = applyAction(game, {
-        type: "PLAY_CARD",
-        playerId: "player-1",
-        cardId: bladeId,
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: bladeId,
     });
 
     current = applyAction(current, {
-        type: "PLAY_CARD",
-        playerId: "player-1",
-        cardId: scoutId,
+      type: "PLAY_CARD",
+      playerId: "player-1",
+      cardId: scoutId,
     });
 
-    const handSizeBefore =
-        current.players["player-1"].zones.hand.length;
+    const handSizeBefore = current.players["player-1"].zones.hand.length;
 
     current = applyAction(current, {
-        type: "ACTIVATE_ALLY",
-        playerId: "player-1",
-        cardId: bladeId,
-        abilityId: "runic-blade-ally",
+      type: "ACTIVATE_ALLY",
+      playerId: "player-1",
+      cardId: bladeId,
+      abilityId: "runic-blade-ally",
     });
 
-    expect(
-        current.players["player-1"].zones.hand,
-    ).toHaveLength(handSizeBefore + 1);
+    expect(current.players["player-1"].zones.hand).toHaveLength(
+      handSizeBefore + 1,
+    );
 
-    expect(
-        current.cards[bladeId].usedAbilities,
-    ).toContain("runic-blade-ally");
+    expect(current.cards[bladeId].usedAbilities).toContain("runic-blade-ally");
 
     expect(validateGameState(current)).toEqual([]);
   });
 
-  
   it("réinitialise les alliances des cartes en fin de tour", () => {
     const { game, bladeId, scoutId } = prepareGame();
 
@@ -356,31 +318,24 @@ describe("Ally abilities", () => {
       abilityId: "imperial-scout-ally",
     });
 
-    expect(
-      current.cards[scoutId].usedAbilities,
-    ).toContain("imperial-scout-ally");
+    expect(current.cards[scoutId].usedAbilities).toContain(
+      "imperial-scout-ally",
+    );
 
     current = applyAction(current, {
       type: "END_TURN",
       playerId: "player-1",
     });
 
-    expect(
-      current.cards[scoutId].usedAbilities,
-    ).toEqual([]);
+    expect(current.cards[scoutId].usedAbilities).toEqual([]);
 
-    expect(
-      current.players["player-1"].zones.inPlay,
-    ).toEqual([]);
+    expect(current.players["player-1"].zones.inPlay).toEqual([]);
 
-    expect(
-      current.players["player-1"].zones.discard,
-    ).toContain(scoutId);
+    expect(current.players["player-1"].zones.discard).toContain(scoutId);
 
     expect(validateGameState(current)).toEqual([]);
   });
 
-  
   it("prend en compte un champion allié déjà en jeu", () => {
     const { game, bladeId } = prepareGame();
 
@@ -394,6 +349,7 @@ describe("Ally abilities", () => {
       id: guardId,
       definitionId: "royalGuard",
       ownerId: "player-1",
+      origin: "personal",
       exhausted: false,
       usedAbilities: [],
     };
@@ -406,17 +362,10 @@ describe("Ally abilities", () => {
       cardId: bladeId,
     });
 
-    expect(
-      hasAlly(played, "player-1", bladeId),
-    ).toBe(true);
+    expect(hasAlly(played, "player-1", bladeId)).toBe(true);
 
     expect(
-      canActivateAlly(
-        played,
-        "player-1",
-        bladeId,
-        "runic-blade-ally",
-      ),
+      canActivateAlly(played, "player-1", bladeId, "runic-blade-ally"),
     ).toBe(true);
 
     expect(validateGameState(played)).toEqual([]);
@@ -431,16 +380,14 @@ describe("Ally abilities", () => {
     // Transformer une carte d'or de la main
     // en Stratège impérial pour le scénario.
     const strategistId = player.zones.hand.find(
-      (id) =>
-        current.cards[id].definitionId === "gold",
+      (id) => current.cards[id].definitionId === "gold",
     );
 
     if (!strategistId) {
       throw new Error("Carte de test introuvable.");
     }
 
-    current.cards[strategistId].definitionId =
-      "imperialStrategist";
+    current.cards[strategistId].definitionId = "imperialStrategist";
 
     let state = applyAction(current, {
       type: "PLAY_CARD",
@@ -475,9 +422,7 @@ describe("Ally abilities", () => {
       throw new Error("Choix attendu.");
     }
 
-    expect(
-      state.players["player-1"].resources.combat,
-    ).toBe(3);
+    expect(state.players["player-1"].resources.combat).toBe(3);
 
     const selectedCardId = choice.availableCardIds[0];
 
@@ -490,15 +435,10 @@ describe("Ally abilities", () => {
 
     expect(state.resolution.pendingChoice).toBeNull();
 
-    expect(
-      state.players["player-1"].resources.combat,
-    ).toBe(6);
+    expect(state.players["player-1"].resources.combat).toBe(6);
 
-    expect(
-      state.players["player-1"].zones.discard,
-    ).toContain(selectedCardId);
+    expect(state.players["player-1"].zones.discard).toContain(selectedCardId);
 
     expect(validateGameState(state)).toEqual([]);
   });
-
 });

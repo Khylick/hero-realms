@@ -1,10 +1,6 @@
-import type {
-  EnemyId,
-} from "./common";
+import type { EnemyId } from "./common";
 
-import type {
-  HazardId,
-} from "./encounter";
+import type { HazardId } from "./encounter";
 
 export interface CampaignMasterState {
   id: EnemyId;
@@ -14,6 +10,11 @@ export interface CampaignMasterState {
   maxHealth: number;
 
   defeated: boolean;
+  level: 1 | 2;
+  masteryCardIds: string[];
+  combat: number;
+  deck: string[];
+  discard: string[];
 }
 
 export interface CampaignMinionState {
@@ -25,6 +26,9 @@ export interface CampaignMinionState {
 
   defeated: boolean;
   isGuard: boolean;
+  zoneOwnerId: string;
+  exhausted: boolean;
+  sourceCardId: string | null;
 }
 
 export interface CampaignHazardState {
@@ -34,4 +38,6 @@ export interface CampaignHazardState {
   remainingDuration: number | null;
 
   active: boolean;
+  zoneOwnerId: string;
+  sourceCardId: string | null;
 }

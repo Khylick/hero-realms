@@ -1,7 +1,71 @@
-import type { CardDefinition } from
-  "../../game-engine/core/types/card";
+import type { CardDefinition } from "../../game-engine/core/types/card";
 
 export const demoCards: Record<string, CardDefinition> = {
+  fireGem: {
+    id: "fireGem",
+    name: "Gemme de feu",
+    type: "item",
+    cost: 2,
+    isFireGem: true,
+    abilities: [
+      {
+        id: "fire-gem-gold",
+        trigger: "onPlay",
+        effects: [{ type: "gainGold", amount: 2 }],
+      },
+      {
+        id: "fire-gem-sacrifice",
+        trigger: "onSacrifice",
+        effects: [{ type: "gainCombat", amount: 3 }],
+      },
+    ],
+  },
+  woodlandRemedy: {
+    id: "woodlandRemedy",
+    name: "Remède sylvestre",
+    type: "action",
+    faction: "wild",
+    cost: 2,
+    abilities: [
+      {
+        id: "remedy-heal",
+        trigger: "onPlay",
+        effects: [{ type: "heal", target: "self", amount: 4 }],
+      },
+      {
+        id: "remedy-ally",
+        trigger: "ally",
+        effects: [{ type: "drawCards", amount: 1 }],
+      },
+    ],
+  },
+  soulOffering: {
+    id: "soulOffering",
+    name: "Offrande des âmes",
+    type: "action",
+    faction: "necros",
+    cost: 3,
+    abilities: [
+      {
+        id: "offering-combat",
+        trigger: "onPlay",
+        effects: [{ type: "gainCombat", amount: 3 }],
+      },
+      {
+        id: "offering-purge",
+        trigger: "onPlay",
+        optional: true,
+        effects: [
+          {
+            type: "chooseCard",
+            from: "discard",
+            action: "sacrifice",
+            amount: 1,
+          },
+        ],
+      },
+    ],
+  },
   gold: {
     id: "gold",
     name: "Pièce d'or",
@@ -126,7 +190,7 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
-  
+
   imperialScout: {
     id: "imperialScout",
     name: "Éclaireur impérial",
@@ -156,7 +220,7 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
-  
+
   imperialStrategist: {
     id: "imperialStrategist",
     name: "Stratège impérial",
@@ -221,7 +285,7 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
-  
+
   battleMage: {
     id: "battleMage",
     name: "Mage de bataille",
@@ -244,5 +308,4 @@ export const demoCards: Record<string, CardDefinition> = {
       },
     ],
   },
-
 };

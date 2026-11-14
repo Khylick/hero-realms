@@ -13,6 +13,7 @@ export interface CampaignEncounterDefinition {
   masterDefinitionId: string;
   minions: EncounterMinionEntry[];
   hazardDefinitionIds: string[];
+  masterDeck?: string[];
 }
 
 export type EncounterRegistry = Record<

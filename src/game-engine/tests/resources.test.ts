@@ -1,4 +1,3 @@
-
 import { describe, expect, it } from "vitest";
 
 import {
@@ -22,44 +21,32 @@ describe("Player resources", () => {
   it("ajoute de l'or sans modifier le joueur initial", () => {
     const player = makePlayer();
 
-    const updated = gainResource(
-      player,
-      "gold",
-      5,
-    );
+    const updated = gainResource(player, "gold", 5);
 
     expect(updated.resources.gold).toBe(5);
     expect(player.resources.gold).toBe(0);
   });
 
   it("dépense de l'or", () => {
-    const player = gainResource(
-      makePlayer(),
-      "gold",
-      5,
-    );
+    const player = gainResource(makePlayer(), "gold", 5);
 
-    const updated = spendResource(
-      player,
-      "gold",
-      3,
-    );
+    const updated = spendResource(player, "gold", 3);
 
     expect(updated.resources.gold).toBe(2);
   });
 
   it("refuse une dépense supérieure aux ressources", () => {
-    expect(() =>
-      spendResource(makePlayer(), "gold", 3),
-    ).toThrow("Ressource insuffisante");
+    expect(() => spendResource(makePlayer(), "gold", 3)).toThrow(
+      "Ressource insuffisante",
+    );
   });
 
-  it("limite les soins à la santé maximale", () => {
+  it("permet de dépasser la santé de départ par les soins", () => {
     const player = damagePlayer(makePlayer(), 10);
 
     const healed = healPlayer(player, 20);
 
-    expect(healed.health).toBe(50);
+    expect(healed.health).toBe(60);
   });
 
   it("détecte la défaite d'un personnage", () => {

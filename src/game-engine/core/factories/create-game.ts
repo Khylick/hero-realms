@@ -1,16 +1,11 @@
-
 import type { GameState } from "../types/game-state";
 import type { PlayerState } from "../types/player";
 import type { CardDefinition } from "../types/card";
 import type { GameMode } from "../types/common";
 
-import type {
-  CharacterPowerRegistry,
-} from "../types/character-power";
+import type { CharacterPowerRegistry } from "../types/character-power";
 
-import type {
-  ClassProgressionRegistry,
-} from "../types/character-progression";
+import type { ClassProgressionRegistry } from "../types/character-progression";
 
 interface CreateGameOptions {
   id: string;
@@ -32,22 +27,20 @@ export function createGame({
   classProgressions = {},
 }: CreateGameOptions): GameState {
   if (players.length === 0) {
-    throw new Error(
-      "Une partie doit contenir au moins un joueur.",
-    );
+    throw new Error("Une partie doit contenir au moins un joueur.");
   }
 
   const playerIds = players.map((player) => player.id);
 
   if (new Set(playerIds).size !== playerIds.length) {
-    throw new Error(
-      "Les identifiants des joueurs doivent être uniques.",
-    );
+    throw new Error("Les identifiants des joueurs doivent être uniques.");
   }
 
   return {
     id,
     mode,
+    format: "duel",
+    log: [],
 
     status: "setup",
     phase: "main",
@@ -57,9 +50,7 @@ export function createGame({
 
     playerOrder: playerIds,
 
-    players: Object.fromEntries(
-      players.map((player) => [player.id, player]),
-    ),
+    players: Object.fromEntries(players.map((player) => [player.id, player])),
 
     cardDefinitions,
     cards: {},
@@ -68,11 +59,8 @@ export function createGame({
       deck: [],
       row: [],
       sacrificed: [],
+      fireGems: [],
     },
-
-    master: null,
-    minions: {},
-    hazards: {},
 
     campaign: null,
 

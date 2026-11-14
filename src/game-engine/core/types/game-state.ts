@@ -1,82 +1,64 @@
 import type {
   CardId,
   GameMode,
+  GameFormat,
   GamePhase,
   GameStatus,
   PlayerId,
 } from "./common";
 
-import type {
-  CardDefinition,
-  CardInstance,
-} from "./card";
+import type { CardDefinition, CardInstance } from "./card";
 
 import type { PlayerState } from "./player";
 
-import type {
-  HazardState,
-  MasterState,
-  MinionState,
-} from "./enemy";
-
 import type { CampaignProgress } from "./campaign";
 
-import type {
-  EffectResolutionState,
-} from "./resolution";
+import type { EffectResolutionState } from "./resolution";
 
-import type {
-  CharacterPowerRegistry,
-} from "./character-power";
+import type { CharacterPowerRegistry } from "./character-power";
 
-import type {
-  ClassProgressionRegistry,
-} from "./character-progression";
+import type { ClassProgressionRegistry } from "./character-progression";
 
-import type {
-  CampaignEncounterState,
-} from "./campaign-encounter-state";
+import type { CampaignEncounterState } from "./campaign-encounter-state";
 
 export interface MarketState {
-    deck: CardId[];
-    row: CardId[];
-    sacrificed: CardId[];
+  deck: CardId[];
+  row: CardId[];
+  sacrificed: CardId[];
+  fireGems: CardId[];
 }
 
 export interface GameState {
-    id: string;
+  id: string;
 
-    mode: GameMode;
-    status: GameStatus;
-    phase: GamePhase;
+  mode: GameMode;
+  format: GameFormat;
+  log: string[];
+  status: GameStatus;
+  phase: GamePhase;
 
-    turnNumber: number;
-    activePlayerId: PlayerId;
+  turnNumber: number;
+  activePlayerId: PlayerId;
 
-    playerOrder: PlayerId[];
+  playerOrder: PlayerId[];
 
-    players: Record<PlayerId, PlayerState>;
+  players: Record<PlayerId, PlayerState>;
 
-    cardDefinitions: Record<string, CardDefinition>;
-    cards: Record<CardId, CardInstance>;
+  cardDefinitions: Record<string, CardDefinition>;
+  cards: Record<CardId, CardInstance>;
 
-    market: MarketState;
+  market: MarketState;
 
-    master: MasterState | null;
+  campaign: CampaignProgress | null;
 
-    minions: Record<string, MinionState>;
-    hazards: Record<string, HazardState>;
+  randomState: number;
+  nextCardInstanceId: number;
 
-    campaign: CampaignProgress | null;
+  resolution: EffectResolutionState;
 
-    randomState: number;
-    nextCardInstanceId: number;
+  powerDefinitions: CharacterPowerRegistry;
 
-    resolution: EffectResolutionState;
+  classProgressions: ClassProgressionRegistry;
 
-    powerDefinitions: CharacterPowerRegistry;
-
-    classProgressions: ClassProgressionRegistry;
-
-    campaignEncounter: CampaignEncounterState | null;
+  campaignEncounter: CampaignEncounterState | null;
 }

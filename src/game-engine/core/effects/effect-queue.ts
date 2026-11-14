@@ -19,19 +19,15 @@ export function enqueueEffects(
   effects: CardEffect[],
 ): GameState {
   if (game.resolution.pendingChoice) {
-    throw new Error(
-      "Impossible d'ajouter des effets pendant un choix.",
-    );
+    throw new Error("Impossible d'ajouter des effets pendant un choix.");
   }
 
   const next = structuredClone(game);
 
-  const queued: ResolutionStep[] = effects.map(
-    (effect) => ({
-      context,
-      effect,
-    }),
-  );
+  const queued: ResolutionStep[] = effects.map((effect) => ({
+    context,
+    effect,
+  }));
 
   next.resolution.queue.push(...queued);
 
@@ -115,9 +111,7 @@ function assertSelfTarget(
   }
 }
 
-export function processEffectQueue(
-  game: GameState,
-): GameState {
+export function processEffectQueue(game: GameState): GameState {
   const next = structuredClone(game);
 
   if (next.resolution.pendingChoice) {
@@ -153,15 +147,12 @@ export function processEffectQueue(
       case "gainGold":
       case "gainCombat":
       case "heal": {
-        next.players[context.playerId] =
-          resolveSimpleEffect(player, effect);
+        next.players[context.playerId] = resolveSimpleEffect(player, effect);
         break;
       }
 
       case "drawCards": {
-        const random = createSeededRandom(
-          next.randomState,
-        );
+        const random = createSeededRandom(next.randomState);
 
         next.players[context.playerId] = drawCards(
           player,
@@ -176,13 +167,8 @@ export function processEffectQueue(
       case "discardCards": {
         assertSelfTarget(effect);
 
-        if (
-          !Number.isSafeInteger(effect.amount) ||
-          effect.amount < 1
-        ) {
-          throw new Error(
-            "Nombre de cartes à défausser invalide.",
-          );
+        if (!Number.isSafeInteger(effect.amount) || effect.amount < 1) {
+          throw new Error("Nombre de cartes à défausser invalide.");
         }
 
         if (
@@ -202,15 +188,7 @@ export function processEffectQueue(
       case "stunChampion":
         assertSelfTarget(effect);
 
-        if (
-          requestCardChoice(
-            next,
-            context.playerId,
-            "champions",
-            "stun",
-            1,
-          )
-        ) {
+        if (requestCardChoice(next, context.playerId, "champions", "stun", 1)) {
           return next;
         }
         break;
@@ -218,36 +196,18 @@ export function processEffectQueue(
       case "sacrificeCard":
         assertSelfTarget(effect);
 
-        if (
-          requestCardChoice(
-            next,
-            context.playerId,
-            "hand",
-            "sacrifice",
-            1,
-          )
-        ) {
+        if (requestCardChoice(next, context.playerId, "hand", "sacrifice", 1)) {
           return next;
         }
         break;
 
       case "chooseCard": {
-        if (
-          effect.from === "discard" &&
-          effect.action === "discard"
-        ) {
-          throw new Error(
-            "Impossible de défausser une carte déjà défaussée.",
-          );
+        if (effect.from === "discard" && effect.action === "discard") {
+          throw new Error("Impossible de défausser une carte déjà défaussée.");
         }
 
-        if (
-          !Number.isSafeInteger(effect.amount) ||
-          effect.amount < 1
-        ) {
-          throw new Error(
-            "Nombre de cartes à choisir invalide.",
-          );
+        if (!Number.isSafeInteger(effect.amount) || effect.amount < 1) {
+          throw new Error("Nombre de cartes à choisir invalide.");
         }
 
         if (
@@ -265,9 +225,7 @@ export function processEffectQueue(
       }
 
       default:
-        throw new Error(
-          `Effet non implémenté : ${JSON.stringify(effect)}`,
-        );
+        throw new Error(`Effet non implémenté : ${JSON.stringify(effect)}`);
     }
   }
 
@@ -282,7 +240,7 @@ export function resolveOptionalAbility(
 ): GameState {
   if (
     game.status !== "playing" ||
-    game.phase !== "main"
+    (game.phase !== "main" && game.phase !== "master")
   ) {
     throw new Error(
       "Impossible de résoudre une capacité optionnelle hors de la phase principale.",
@@ -292,9 +250,7 @@ export function resolveOptionalAbility(
   const choice = game.resolution.pendingChoice;
 
   if (!choice || choice.type !== "optionalAbility") {
-    throw new Error(
-      "Aucune capacité optionnelle n'est en attente.",
-    );
+    throw new Error("Aucune capacité optionnelle n'est en attente.");
   }
 
   if (choice.id !== choiceId) {
@@ -302,9 +258,7 @@ export function resolveOptionalAbility(
   }
 
   if (choice.playerId !== playerId) {
-    throw new Error(
-      "Ce choix appartient à un autre joueur.",
-    );
+    throw new Error("Ce choix appartient à un autre joueur.");
   }
 
   const next = structuredClone(game);
@@ -330,7 +284,7 @@ export function resolveChoice(
 ): GameState {
   if (
     game.status !== "playing" ||
-    game.phase !== "main"
+    (game.phase !== "main" && game.phase !== "master")
   ) {
     throw new Error(
       "impossible de résoudre un choix hors de la phase principale.",
@@ -348,24 +302,15 @@ export function resolveChoice(
   }
 
   if (choice.playerId !== playerId) {
-    throw new Error(
-      "Ce choix appartient à un autre joueur.",
-    );
+    throw new Error("Ce choix appartient à un autre joueur.");
   }
 
   if (selectedCardIds.length !== choice.amount) {
-    throw new Error(
-      `Il faut sélectionner ${choice.amount} carte(s).`,
-    );
+    throw new Error(`Il faut sélectionner ${choice.amount} carte(s).`);
   }
 
-  if (
-    new Set(selectedCardIds).size !==
-    selectedCardIds.length
-  ) {
-    throw new Error(
-      "Une carte ne peut pas être sélectionnée deux fois.",
-    );
+  if (new Set(selectedCardIds).size !== selectedCardIds.length) {
+    throw new Error("Une carte ne peut pas être sélectionnée deux fois.");
   }
 
   const next = structuredClone(game);
@@ -380,9 +325,7 @@ export function resolveChoice(
       !choice.availableCardIds.includes(cardId) ||
       !player.zones[choice.from].includes(cardId)
     ) {
-      throw new Error(
-        `Carte non autorisée pour ce choix : ${cardId}`,
-      );
+      throw new Error(`Carte non autorisée pour ce choix : ${cardId}`);
     }
 
     player = moveCard(

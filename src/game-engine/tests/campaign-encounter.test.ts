@@ -1,8 +1,4 @@
-import {
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   createEncounter,
@@ -13,13 +9,9 @@ import {
   validateGameState,
 } from "../core";
 
-import {
-  demoHeroGameContent,
-} from "../../game-content/demo-hero-game-content";
+import { demoHeroGameContent } from "../../game-content/demo-hero-game-content";
 
-import {
-  demoCampaignContent,
-} from "../../game-content/campaigns/demo/demo-campaign-content";
+import { demoCampaignContent } from "../../game-content/campaigns/demo/demo-campaign-content";
 
 const encounterId = "shadow-lord-encounter";
 
@@ -46,13 +38,9 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    expect(encounter.progress.id).toBe(
-      encounterId,
-    );
+    expect(encounter.progress.id).toBe(encounterId);
 
-    expect(encounter.progress.status).toBe(
-      "notStarted",
-    );
+    expect(encounter.progress.status).toBe("notStarted");
 
     expect(encounter.progress.round).toBe(0);
   });
@@ -63,9 +51,7 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    expect(encounter.master.definitionId).toBe(
-      "shadow-lord",
-    );
+    expect(encounter.master.definitionId).toBe("shadow-lord");
 
     expect(encounter.master.health).toBe(40);
     expect(encounter.master.maxHealth).toBe(40);
@@ -78,13 +64,9 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    expect(
-      encounter.progress.minionIds,
-    ).toHaveLength(3);
+    expect(encounter.progress.minionIds).toHaveLength(3);
 
-    expect(
-      Object.keys(encounter.minions),
-    ).toHaveLength(3);
+    expect(Object.keys(encounter.minions)).toHaveLength(3);
   });
 
   it("attribue des identifiants uniques aux sbires", () => {
@@ -104,29 +86,21 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    const minions = Object.values(
-      encounter.minions,
-    );
+    const minions = Object.values(encounter.minions);
 
     const skeletons = minions.filter(
-      (minion) =>
-        minion.definitionId === "skeleton-warrior",
+      (minion) => minion.definitionId === "skeleton-warrior",
     );
 
     const cultists = minions.filter(
-      (minion) =>
-        minion.definitionId === "dark-cultist",
+      (minion) => minion.definitionId === "dark-cultist",
     );
 
     expect(skeletons).toHaveLength(2);
     expect(cultists).toHaveLength(1);
 
     expect(
-      skeletons.every(
-        (minion) =>
-          minion.health === 6 &&
-          minion.isGuard,
-      ),
+      skeletons.every((minion) => minion.health === 6 && minion.isGuard),
     ).toBe(true);
 
     expect(cultists[0].health).toBe(4);
@@ -139,17 +113,11 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    expect(
-      encounter.progress.hazardIds,
-    ).toHaveLength(1);
+    expect(encounter.progress.hazardIds).toHaveLength(1);
 
-    const hazard = Object.values(
-      encounter.hazards,
-    )[0];
+    const hazard = Object.values(encounter.hazards)[0];
 
-    expect(hazard.definitionId).toBe(
-      "cursed-altar",
-    );
+    expect(hazard.definitionId).toBe("cursed-altar");
 
     expect(hazard.remainingDuration).toBeNull();
     expect(hazard.active).toBe(true);
@@ -175,29 +143,20 @@ describe("Campaign encounter", () => {
         encounterId: "unknown-encounter",
         content: demoCampaignContent,
       }),
-    ).toThrow(
-      "Rencontre introuvable : unknown-encounter.",
-    );
+    ).toThrow("Rencontre introuvable : unknown-encounter.");
   });
 
   it("initialise une rencontre dans une partie", () => {
     const game = createScenarioGame();
 
-    const initialized = initializeEncounter(
-      game,
-      {
-        encounterId,
-        content: demoCampaignContent,
-      },
-    );
+    const initialized = initializeEncounter(game, {
+      encounterId,
+      content: demoCampaignContent,
+    });
 
-    expect(
-      initialized.campaignEncounter,
-    ).not.toBeNull();
+    expect(initialized.campaignEncounter).not.toBeNull();
 
-    expect(
-      initialized.campaignEncounter?.progress.id,
-    ).toBe(encounterId);
+    expect(initialized.campaignEncounter?.progress.id).toBe(encounterId);
 
     expect(validateGameState(initialized)).toEqual([]);
   });
@@ -217,22 +176,17 @@ describe("Campaign encounter", () => {
   it("refuse d'initialiser deux rencontres", () => {
     const game = createScenarioGame();
 
-    const initialized = initializeEncounter(
-      game,
-      {
-        encounterId,
-        content: demoCampaignContent,
-      },
-    );
+    const initialized = initializeEncounter(game, {
+      encounterId,
+      content: demoCampaignContent,
+    });
 
     expect(() =>
       initializeEncounter(initialized, {
         encounterId,
         content: demoCampaignContent,
       }),
-    ).toThrow(
-      "Une rencontre est déjà initialisée.",
-    );
+    ).toThrow("Une rencontre est déjà initialisée.");
   });
 
   it("refuse une initialisation hors préparation", () => {
@@ -256,11 +210,9 @@ describe("Campaign encounter", () => {
       content: demoCampaignContent,
     });
 
-    encounter.master.health = 100;
+    encounter.master.health = -1;
 
-    expect(
-      validateCampaignEncounter(encounter),
-    ).toContain(
+    expect(validateCampaignEncounter(encounter)).toContain(
       "Les PV du maître sont invalides.",
     );
   });
@@ -268,22 +220,15 @@ describe("Campaign encounter", () => {
   it("conserve un état global valide", () => {
     const game = createScenarioGame();
 
-    const initialized = initializeEncounter(
-      game,
-      {
-        encounterId,
-        content: demoCampaignContent,
-      },
+    const initialized = initializeEncounter(game, {
+      encounterId,
+      content: demoCampaignContent,
+    });
+
+    expect(validateCampaignEncounter(initialized.campaignEncounter!)).toEqual(
+      [],
     );
 
-    expect(
-      validateCampaignEncounter(
-        initialized.campaignEncounter!,
-      ),
-    ).toEqual([]);
-
-    expect(
-      validateGameState(initialized),
-    ).toEqual([]);
+    expect(validateGameState(initialized)).toEqual([]);
   });
 });

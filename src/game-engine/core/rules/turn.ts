@@ -1,22 +1,19 @@
-
 import type { GameState } from "../types/game-state";
 import type { PlayerState } from "../types/player";
 
 import { drawCards } from "./deck";
 import { resetResources } from "./resources";
 import { createSeededRandom } from "../utils/random";
+import { beginMasterTurn, prepareMasterDeck } from "./master-turn";
+import { startCampaignEncounter } from "./start-campaign-encounter";
 
 import { readyChampions } from "./champions";
 
-import {
-  readyCharacterPowers,
-} from "./ready-character-powers";
+import { readyCharacterPowers } from "./ready-character-powers";
 
 const HAND_SIZE = 5;
 
-export function startGame(
-  game: GameState,
-): GameState {
+export function startGame(game: GameState): GameState {
   if (game.status !== "setup") {
     throw new Error("La partie a déjà démarré.");
   }
@@ -36,16 +33,10 @@ export function startGame(
     const player = next.players[playerId];
 
     if (!player || player.zones.deck.length === 0) {
-      throw new Error(
-        `Deck initial manquant pour ${playerId}.`,
-      );
+      throw new Error(`Deck initial manquant pour ${playerId}.`);
     }
 
-    next.players[playerId] = drawCards(
-      player,
-      HAND_SIZE,
-      random,
-    );
+    next.players[playerId] = drawCards(player, HAND_SIZE, random);
   }
 
   next.randomState = random.getState();
@@ -54,24 +45,19 @@ export function startGame(
   next.turnNumber = 1;
   next.activePlayerId = next.playerOrder[0];
 
-  const withReadyChampions = readyChampions(
-    next,
-    next.activePlayerId,
-  );
+  const withReadyChampions = readyChampions(next, next.activePlayerId);
 
-  return readyCharacterPowers(
+  const ready = readyCharacterPowers(
     withReadyChampions,
     withReadyChampions.activePlayerId,
   );
+  return ready.campaignEncounter
+    ? beginMasterTurn(startCampaignEncounter(prepareMasterDeck(ready)))
+    : ready;
 }
 
-function cleanupPlayer(
-  player: PlayerState,
-): PlayerState {
-  const cardsToDiscard = [
-    ...player.zones.hand,
-    ...player.zones.inPlay,
-  ];
+function cleanupPlayer(player: PlayerState): PlayerState {
+  const cardsToDiscard = [...player.zones.hand, ...player.zones.inPlay];
 
   return resetResources({
     ...player,
@@ -79,39 +65,32 @@ function cleanupPlayer(
       ...player.zones,
       hand: [],
       inPlay: [],
-      discard: [
-        ...player.zones.discard,
-        ...cardsToDiscard,
-      ],
+      discard: [...player.zones.discard, ...cardsToDiscard],
     },
   });
 }
 
-export function endTurn(
-  game: GameState,
-  playerId: string,
-): GameState {
-  if (
-    game.status !== "playing" ||
-    game.phase !== "main"
-  ) {
-    throw new Error(
-      "Impossible de terminer le tour.",
-    );
+export function endTurn(game: GameState, playerId: string): GameState {
+  if (game.status !== "playing" || game.phase !== "main") {
+    throw new Error("Impossible de terminer le tour.");
   }
 
   if (game.activePlayerId !== playerId) {
-    throw new Error(
-      "Ce n'est pas le tour de ce joueur.",
-    );
+    throw new Error("Ce n'est pas le tour de ce joueur.");
+  }
+
+  if (
+    game.resolution.pendingChoice ||
+    game.resolution.queue.length ||
+    game.campaignEncounter?.pendingChoice
+  ) {
+    throw new Error("Un choix doit être résolu avant de terminer le tour.");
   }
 
   const next = structuredClone(game);
   const random = createSeededRandom(next.randomState);
 
-  const cardsLeavingPlay = [
-    ...next.players[playerId].zones.inPlay,
-  ];
+  const cardsLeavingPlay = [...next.players[playerId].zones.inPlay];
 
   for (const cardId of cardsLeavingPlay) {
     next.cards[cardId].usedAbilities = [];
@@ -119,30 +98,27 @@ export function endTurn(
 
   const player = cleanupPlayer(next.players[playerId]);
 
-  next.players[playerId] = drawCards(
-    player,
-    HAND_SIZE,
-    random,
-  );
+  next.players[playerId] = drawCards(player, HAND_SIZE, random);
 
   next.randomState = random.getState();
 
-  const currentIndex =
-    next.playerOrder.indexOf(playerId);
+  const currentIndex = next.playerOrder.indexOf(playerId);
 
-  const nextIndex =
-    (currentIndex + 1) % next.playerOrder.length;
+  const nextIndex = (currentIndex + 1) % next.playerOrder.length;
 
   next.activePlayerId = next.playerOrder[nextIndex];
   next.turnNumber += 1;
+  if (next.campaignEncounter) {
+    for (const minion of Object.values(next.campaignEncounter.minions)) {
+      if (!minion.defeated) minion.health = minion.maxHealth;
+    }
+  }
 
-  const withReadyChampions = readyChampions(
-    next,
-    playerId,
-  );
+  const withReadyChampions = readyChampions(next, playerId);
 
-  return readyCharacterPowers(
+  const ready = readyCharacterPowers(
     withReadyChampions,
     withReadyChampions.activePlayerId,
   );
+  return ready.campaignEncounter ? beginMasterTurn(ready) : ready;
 }

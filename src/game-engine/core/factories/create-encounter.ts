@@ -1,19 +1,13 @@
-import type {
-  CampaignContent,
-} from "../types/campaign-content";
+import type { CampaignContent } from "../types/campaign-content";
 
-import type {
-  CampaignEncounterState,
-} from "../types/campaign-encounter-state";
+import type { CampaignEncounterState } from "../types/campaign-encounter-state";
 
 import type {
   CampaignMinionState,
   CampaignHazardState,
 } from "../types/campaign-entities";
 
-import {
-  validateCampaignContent,
-} from "../rules/validate-campaign-content";
+import { validateCampaignContent } from "../rules/validate-campaign-content";
 
 export interface CreateEncounterOptions {
   encounterId: string;
@@ -27,21 +21,16 @@ export function createEncounter({
   const errors = validateCampaignContent(content);
 
   if (errors.length > 0) {
-    throw new Error(
-      `Contenu de campagne invalide : ${errors.join("; ")}`,
-    );
+    throw new Error(`Contenu de campagne invalide : ${errors.join("; ")}`);
   }
 
   const definition = content.encounters[encounterId];
 
   if (!definition) {
-    throw new Error(
-      `Rencontre introuvable : ${encounterId}.`,
-    );
+    throw new Error(`Rencontre introuvable : ${encounterId}.`);
   }
 
-  const masterDefinition =
-    content.masters[definition.masterDefinitionId];
+  const masterDefinition = content.masters[definition.masterDefinitionId];
 
   const masterId = `${encounterId}:master`;
 
@@ -53,18 +42,19 @@ export function createEncounter({
     maxHealth: masterDefinition.maxHealth,
 
     defeated: false,
+    level: 1 as const,
+    masteryCardIds: [] as string[],
+    combat: 0,
+    deck: [...(definition.masterDeck ?? [])],
+    discard: [] as string[],
   };
 
-  const minions: Record<
-    string,
-    CampaignMinionState
-  > = {};
+  const minions: Record<string, CampaignMinionState> = {};
 
   let minionIndex = 0;
 
   for (const entry of definition.minions) {
-    const minionDefinition =
-      content.minions[entry.definitionId];
+    const minionDefinition = content.minions[entry.definitionId];
 
     for (let index = 0; index < entry.count; index++) {
       minionIndex++;
@@ -80,35 +70,40 @@ export function createEncounter({
 
         defeated: false,
         isGuard: minionDefinition.isGuard,
+        zoneOwnerId: "master",
+        exhausted: false,
+        sourceCardId: null,
       };
     }
   }
 
-  const hazards: Record<
-    string,
-    CampaignHazardState
-  > = {};
+  const hazards: Record<string, CampaignHazardState> = {};
 
-  definition.hazardDefinitionIds.forEach(
-    (definitionId, index) => {
-      const hazardDefinition =
-        content.hazards[definitionId];
+  definition.hazardDefinitionIds.forEach((definitionId, index) => {
+    const hazardDefinition = content.hazards[definitionId];
 
-      const id = `${encounterId}:hazard:${index + 1}`;
+    const id = `${encounterId}:hazard:${index + 1}`;
 
-      hazards[id] = {
-        id,
-        definitionId,
+    hazards[id] = {
+      id,
+      definitionId,
 
-        remainingDuration:
-          hazardDefinition.duration,
+      remainingDuration: hazardDefinition.duration,
 
-        active: true,
-      };
-    },
-  );
+      active: true,
+      zoneOwnerId: "master",
+      sourceCardId: null,
+    };
+  });
 
   return {
+    content: structuredClone(content),
+    steps: [],
+    pendingChoice: null,
+    nextEntityId: minionIndex + definition.hazardDefinitionIds.length + 1,
+    nextChoiceId: 1,
+    revealedCardIds: [],
+    playerOrder: [],
     progress: {
       id: definition.id,
       status: "notStarted",
